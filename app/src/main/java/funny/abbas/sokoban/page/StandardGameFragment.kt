@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import funny.abbas.sokoban.MainActivity
 import funny.abbas.sokoban.R
 import funny.abbas.sokoban.databinding.FragmentStandardGameBinding
+import funny.abbas.sokoban.domain.StandardLevelBoard
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -63,18 +64,19 @@ class StandardGameFragment : Fragment() {
         }
 
         binding.btMoveLeft.setOnClickListener {
-            sokobanView.controller.moveLeft()
+            sokobanView.moveLeft()
         }
         binding.btMoveUp.setOnClickListener {
-            sokobanView.controller.moveTop()
+            sokobanView.moveTop()
         }
         binding.btMoveRight.setOnClickListener {
-            sokobanView.controller.moveRight()
+            sokobanView.moveRight()
         }
         binding.btMoveBottom.setOnClickListener {
-            sokobanView.controller.moveBottom()
+            sokobanView.moveBottom()
         }
 
+        sokobanView.setLevel(StandardLevelBoard().level1())
     }
 
     companion object {

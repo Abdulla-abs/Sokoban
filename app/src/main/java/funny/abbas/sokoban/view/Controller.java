@@ -8,57 +8,87 @@ import funny.abbas.sokoban.domain.Level;
 import funny.abbas.sokoban.domain.Location;
 import funny.abbas.sokoban.domain.MapObject;
 
-public abstract class Controller {
-
-    protected final Action action = new ActionImpl();
-
+public class Controller implements Action {
     protected Level level;
+    public GameStateListener stateListener;
 
-
-    protected abstract void onMoveLeft();
-
-    protected abstract void onMoveTop();
-
-    protected abstract void onMoveRight();
-
-    protected abstract void onMoveBottom();
-
-    protected abstract void onGameOver();
-
-    private class ActionImpl implements Action {
-
-        @Override
-        public void moveLeft() {
-            onMoveLeft();
-            if (checkGameOver()) {
-                onGameOver();
-            }
+    protected boolean onMoveLeft() {
+        if (level.getRole().canMoveLeft()) {
+            level.getRole().moveLeft(null);
+            return true;
         }
+        return false;
+    }
 
-        @Override
-        public void moveTop() {
-            onMoveTop();
-            if (checkGameOver()) {
-                onGameOver();
-            }
+    protected boolean onMoveTop() {
+        if (level.getRole().canMoveTop()) {
+            level.getRole().moveUp(null);
+            return true;
         }
+        return false;
+    }
 
-        @Override
-        public void moveRight() {
-            onMoveRight();
-            if (checkGameOver()) {
-                onGameOver();
-            }
+
+    protected boolean onMoveRight() {
+        if (level.getRole().canMoveRight()) {
+            level.getRole().moveRight(null);
+            return true;
         }
+        return false;
+    }
 
-        @Override
-        public void moveBottom() {
-            onMoveBottom();
-            if (checkGameOver()) {
-                onGameOver();
-            }
+
+    protected boolean onMoveBottom() {
+        if (level.getRole().canMoveBottom()) {
+            level.getRole().moveBottom(null);
+            return true;
+        }
+        return false;
+    }
+
+
+    protected void onGameOver() {
+        if (stateListener != null){
+            stateListener.onSuccess();
         }
     }
+
+    @Override
+    public boolean moveLeft() {
+        boolean move = onMoveLeft();
+        if (move && checkGameOver()) {
+            onGameOver();
+        }
+        return move;
+    }
+
+    @Override
+    public boolean moveTop() {
+        boolean move = onMoveTop();
+        if (move && checkGameOver()) {
+            onGameOver();
+        }
+        return move;
+    }
+
+    @Override
+    public boolean moveRight() {
+        boolean move = onMoveRight();
+        if (move && checkGameOver()) {
+            onGameOver();
+        }
+        return move;
+    }
+
+    @Override
+    public boolean moveBottom() {
+        boolean move = onMoveBottom();
+        if (move && checkGameOver()) {
+            onGameOver();
+        }
+        return move;
+    }
+
 
     private boolean checkGameOver() {
         List<MapObject> boxes = level.getBoxes();

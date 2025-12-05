@@ -2,12 +2,12 @@ package funny.abbas.sokoban.view;
 
 public interface Action {
 
-    void moveLeft();
+    boolean moveLeft();
 
-    void moveTop();
+    boolean moveTop();
 
-    void moveRight();
+    boolean moveRight();
 
-    void moveBottom();
+    boolean moveBottom();
 
 }

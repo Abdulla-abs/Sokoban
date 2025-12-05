@@ -12,6 +12,8 @@ public abstract class MapObject implements MapObjectAble {
         this.map = map;
     }
 
+    public abstract BoxType getBoxType();
+
     public Optional<MapObject> getObjectFromPosition(int x, int y) {
         if (x < 0 || y < 0) {
             return Optional.empty();

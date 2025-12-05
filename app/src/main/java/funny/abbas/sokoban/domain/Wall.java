@@ -8,6 +8,11 @@ public class Wall extends MapObject {
     }
 
     @Override
+    public BoxType getBoxType() {
+        return BoxType.Wall;
+    }
+
+    @Override
     public boolean canMoveLeft() {
         return false;
     }

@@ -1,6 +1,7 @@
 package funny.abbas.sokoban.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,43 +12,32 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import funny.abbas.sokoban.domain.Box;
+import funny.abbas.sokoban.domain.BoxType;
 import funny.abbas.sokoban.domain.Empty;
 import funny.abbas.sokoban.domain.Level;
 import funny.abbas.sokoban.domain.Location;
 import funny.abbas.sokoban.domain.MapObject;
 import funny.abbas.sokoban.domain.Role;
+import funny.abbas.sokoban.domain.Skin;
+import funny.abbas.sokoban.domain.Theme;
 import funny.abbas.sokoban.domain.Wall;
 
-public class SokobanView extends View {
+public class SokobanView extends View implements Action {
 
-    private GameStateListener stateListener;
     private final float standerBoxSize = 80f;
     private float measuredBoxSize = standerBoxSize;
-    private float targetCircleRadius = (standerBoxSize - standerBoxSize * 0.2f) / 2;
+
+    private final Skin skin = Skin.getInstance();
 
 
-    private final Paint defaultPaint = new Paint();
-    private final Paint targetCirclePaint = new Paint();
-
-
-    private final Controller controller = new MyController();
+    private final Controller controller = new Controller();
 
     public SokobanView(Context context) {
         super(context);
-
-        targetCirclePaint.setColor(Color.RED);
-        targetCirclePaint.setAntiAlias(true);
-        targetCirclePaint.setStyle(Paint.Style.STROKE);
-        targetCirclePaint.setStrokeWidth(standerBoxSize * 0.1f);
     }
 
     public SokobanView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-
-        targetCirclePaint.setColor(Color.RED);
-        targetCirclePaint.setAntiAlias(true);
-        targetCirclePaint.setStyle(Paint.Style.STROKE);
-        targetCirclePaint.setStrokeWidth(standerBoxSize * 0.1f);
     }
 
     @Override
@@ -105,8 +95,6 @@ public class SokobanView extends View {
 
         float measuredWidth = boxRowCount * measuredBoxSize;
         float measureHeight = boxColumnCount * measuredBoxSize;
-        targetCircleRadius = (measuredBoxSize - measuredBoxSize * 0.2f) / 2;
-        targetCirclePaint.setStrokeWidth(measuredBoxSize * 0.1f);
 
         setMeasuredDimension((int) Math.ceil(measuredWidth), (int) Math.ceil(measureHeight));
     }
@@ -118,32 +106,21 @@ public class SokobanView extends View {
         for (int i = 0; i < controller.level.map.length; i++) {
             for (int j = 0; j < controller.level.map[0].length; j++) {
                 MapObject box = controller.level.map[i][j];
-                if (box instanceof Wall) {
-                    defaultPaint.setColor(Color.BLACK);
-                } else if (box instanceof Empty) {
-                    defaultPaint.setColor(Color.WHITE);
-                } else if (box instanceof Role) {
-                    defaultPaint.setColor(Color.CYAN);
-                } else if (box instanceof Box) {
-                    defaultPaint.setColor(Color.GREEN);
-                }
-                canvas.drawRect(box.getLocation().getX() * measuredBoxSize,
-                        box.getLocation().getY() * measuredBoxSize,
-                        box.getLocation().getX() * measuredBoxSize + measuredBoxSize,
-                        box.getLocation().getY() * measuredBoxSize + measuredBoxSize,
-                        defaultPaint);
+                Bitmap bitmap = skin.loadSkin(box.getBoxType(), measuredBoxSize, measuredBoxSize);
+                canvas.drawBitmap(bitmap, box.getLocation().getX() * measuredBoxSize,
+                        box.getLocation().getY() * measuredBoxSize, null);
             }
         }
 
         for (Location location : controller.level.target) {
-            canvas.drawCircle(location.getX() * measuredBoxSize + measuredBoxSize / 2,
-                    location.getY() * measuredBoxSize + measuredBoxSize / 2, targetCircleRadius,
-                    targetCirclePaint);
+            Bitmap bitmap = skin.loadSkin(BoxType.Target, measuredBoxSize, measuredBoxSize);
+            canvas.drawBitmap(bitmap, location.getX() * measuredBoxSize, location.getY() * measuredBoxSize,
+                    null);
         }
     }
 
     public void setStateListener(GameStateListener stateListener) {
-        this.stateListener = stateListener;
+        this.controller.stateListener = stateListener;
     }
 
     public void setLevel(Level level) {
@@ -151,49 +128,44 @@ public class SokobanView extends View {
         requestLayout();
     }
 
-    public Action getController() {
-        return controller.action;
+    public void replaceSkin(Theme theme) {
+        skin.setTheme(theme);
+        invalidate();
     }
 
-    private class MyController extends Controller {
-
-        @Override
-        protected void onMoveLeft() {
-            if (controller.level.getRole().canMoveLeft()) {
-                controller.level.getRole().moveLeft(null);
-            }
+    @Override
+    public boolean moveLeft() {
+        if (controller.moveLeft()) {
             invalidate();
+            return true;
         }
+        return false;
+    }
 
-        @Override
-        protected void onMoveTop() {
-            if (controller.level.getRole().canMoveTop()) {
-                controller.level.getRole().moveUp(null);
-            }
+    @Override
+    public boolean moveTop() {
+        if (controller.moveTop()) {
             invalidate();
+            return true;
         }
+        return false;
+    }
 
-        @Override
-        protected void onMoveRight() {
-            if (controller.level.getRole().canMoveRight()) {
-                controller.level.getRole().moveRight(null);
-            }
+    @Override
+    public boolean moveRight() {
+        if (controller.moveRight()) {
             invalidate();
+            return true;
         }
+        return false;
+    }
 
-        @Override
-        protected void onMoveBottom() {
-            if (controller.level.getRole().canMoveBottom()) {
-                controller.level.getRole().moveBottom(null);
-            }
+    @Override
+    public boolean moveBottom() {
+        if (controller.moveBottom()) {
             invalidate();
+            return true;
         }
-
-        @Override
-        protected void onGameOver() {
-            if (stateListener != null) {
-                stateListener.onSuccess();
-            }
-        }
+        return false;
     }
 }

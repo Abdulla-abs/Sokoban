@@ -8,6 +8,11 @@ public class Empty extends MapObject {
     }
 
     @Override
+    public BoxType getBoxType() {
+        return BoxType.Empty;
+    }
+
+    @Override
     public boolean canMoveLeft() {
         return true;
     }

@@ -16,18 +16,19 @@ public class Level {
 
     private MapObject role;
     private List<MapObject> boxes;
+
     public Level(MapObject[][] map, List<Location> target) {
         this.map = map;
         this.target = target;
     }
 
-    public List<Integer> serialize(){
+    public List<Integer> serialize() {
         ArrayList<Integer> integers = new ArrayList<>();
         integers.add(map.length);
         integers.add(map[0].length);
         for (MapObject[] mapObjects : map) {
             for (MapObject mapObject : mapObjects) {
-                if (mapObject instanceof Role){
+                if (mapObject instanceof Role) {
                     integers.add(BoxType.Role.flag);
                 } else if (mapObject instanceof Box) {
                     integers.add(BoxType.Box.flag);
@@ -68,7 +69,7 @@ public class Level {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 int flag = origin.get(index++);
-                newMap[i][j] = createMapObject(flag,new Location(j,i),newMap);
+                newMap[i][j] = createMapObject(flag, new Location(j, i), newMap);
             }
         }
 
@@ -85,22 +86,22 @@ public class Level {
             newTargets.add(new Location(x, y));
         }
 
-        return new Level(newMap,newTargets);
+        return new Level(newMap, newTargets);
     }
 
     // 根据flag创建对应的MapObject
     private static MapObject createMapObject(int flag, Location location, MapObject[][] newMap) {
         if (flag == BoxType.Role.flag) {
-            return new Role(location,newMap);
+            return new Role(location, newMap);
         } else if (flag == BoxType.Box.flag) {
-            return new Box(location,newMap);
+            return new Box(location, newMap);
         } else if (flag == BoxType.Wall.flag) {
-            return new Wall(location,newMap);
+            return new Wall(location, newMap);
         } else if (flag == BoxType.Empty.flag) {
-            return new Empty(location,newMap);
+            return new Empty(location, newMap);
         } else {
             // 处理未知类型，默认为空
-            return new Empty(location,newMap);
+            return new Empty(location, newMap);
         }
     }
 
@@ -166,15 +167,16 @@ public class Level {
                     .findFirst();
             roleOptional.ifPresent(mapObject -> role = mapObject);
         }
+        if (role == null) throw new IllegalStateException("没有找到推箱子的人~");
         return role;
     }
 
-    public List<MapObject> getBoxes(){
-        if (boxes == null){
+    public List<MapObject> getBoxes() {
+        if (boxes == null) {
             boxes = new ArrayList<>();
             for (MapObject[] mapObjects : map) {
                 for (MapObject mapObject : mapObjects) {
-                    if (mapObject instanceof Box){
+                    if (mapObject instanceof Box) {
                         boxes.add(mapObject);
                     }
                 }

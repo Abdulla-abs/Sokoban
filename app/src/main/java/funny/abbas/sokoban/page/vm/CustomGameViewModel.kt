@@ -35,7 +35,7 @@ class CustomGameViewModel : ViewModel {
 
     private fun getLevelOfPage(): Single<List<CustomLevel>> {
         return MyApplication.appDatabase.customLevelDao
-            .getLevelWithLimit(pageSize, page)
+            .getLevelWithLimit(pageSize, page * pageSize)
             .subscribeOn(Schedulers.io())
             .map { dataList ->
                 levelList.clear()

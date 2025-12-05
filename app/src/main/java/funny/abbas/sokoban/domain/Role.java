@@ -11,6 +11,11 @@ public class Role extends MapObject {
     }
 
     @Override
+    public BoxType getBoxType() {
+        return BoxType.Role;
+    }
+
+    @Override
     public boolean canMoveLeft() {
         return getLeftObj().map(new Function<MapObject, Boolean>() {
             @Override

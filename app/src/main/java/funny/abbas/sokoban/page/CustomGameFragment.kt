@@ -73,16 +73,16 @@ class CustomGameFragment : Fragment() {
         }
 
         binding.btMoveLeft.setOnClickListener {
-            sokobanView.controller.moveLeft()
+            sokobanView.moveLeft()
         }
         binding.btMoveUp.setOnClickListener {
-            sokobanView.controller.moveTop()
+            sokobanView.moveTop()
         }
         binding.btMoveRight.setOnClickListener {
-            sokobanView.controller.moveRight()
+            sokobanView.moveRight()
         }
         binding.btMoveBottom.setOnClickListener {
-            sokobanView.controller.moveBottom()
+            sokobanView.moveBottom()
         }
         binding.preLevel.setOnClickListener {
             viewmodel.getPreLevel()

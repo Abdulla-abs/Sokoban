@@ -13,6 +13,11 @@ public class Box extends MapObject {
     }
 
     @Override
+    public BoxType getBoxType() {
+        return BoxType.Box;
+    }
+
+    @Override
     public boolean canMoveLeft() {
         return getLeftObj().filter(new Predicate<MapObject>() {
             @Override
