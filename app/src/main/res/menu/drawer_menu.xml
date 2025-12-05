@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group >
+
+        <item
+            android:id="@+id/standard_level"
+            android:title="游戏关卡" />
+        <item
+            android:id="@+id/custom_level"
+            android:title="自定义关卡" />
+        <item
+            android:id="@+id/create_level"
+            android:title="创建自定义关卡" />
+
+    </group>
+</menu>

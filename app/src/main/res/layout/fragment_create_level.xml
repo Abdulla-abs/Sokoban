@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".page.CreateLevelFragment">
+
+    <funny.abbas.sokoban.view.CreateSokobanLevelView
+        android:id="@+id/create_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/add_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="增加行" />
+
+            <Button
+                android:id="@+id/reduce_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="减少行" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/add_column"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="增加列" />
+
+            <Button
+                android:id="@+id/reduce_column"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="减少列" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="20dp"
+        android:src="@drawable/baseline_save_24"
+        android:layout_marginBottom="40dp" />
+
+</FrameLayout>

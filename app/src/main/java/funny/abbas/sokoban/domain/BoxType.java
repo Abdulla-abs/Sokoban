@@ -4,7 +4,8 @@ public enum BoxType {
     Empty(0),
     Wall(1),
     Box(2),
-    Role(3);
+    Role(3),
+    Target(4);
 
     public final int flag;
 

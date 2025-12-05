@@ -1,7 +1,9 @@
 package funny.abbas.sokoban.domain;
 
+import java.util.List;
+
 public class LevelMapper {
-    public static Level mapper(BoxType[][] map) {
+    public static Level mapper(BoxType[][] map, List<Location> target) {
         MapObject[][] mapObjects = new MapObject[map.length][];
         for (int i = 0; i < map.length; i++) {
             mapObjects[i] = new MapObject[map[i].length];
@@ -27,6 +29,6 @@ public class LevelMapper {
             }
         }
 
-        return new Level(mapObjects, new Location[]{});
+        return new Level(mapObjects, target);
     }
 }

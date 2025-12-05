@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/standardGameFragment">
+
+    <fragment
+        android:id="@+id/standardGameFragment"
+        android:name="funny.abbas.sokoban.page.StandardGameFragment"
+        android:label="fragment_standard_game"
+        tools:layout="@layout/fragment_standard_game" />
+    <fragment
+        android:id="@+id/customGameFragment"
+        android:name="funny.abbas.sokoban.page.CustomGameFragment"
+        android:label="fragment_custom_game"
+        tools:layout="@layout/fragment_custom_game" />
+    <fragment
+        android:id="@+id/createLevelFragment"
+        android:name="funny.abbas.sokoban.page.CreateLevelFragment"
+        android:label="fragment_create_level"
+        tools:layout="@layout/fragment_create_level" />
+</navigation>
