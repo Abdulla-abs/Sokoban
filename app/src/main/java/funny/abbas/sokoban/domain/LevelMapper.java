@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class LevelMapper {
-    public static Level mapper(BoxType[][] map,Location role, List<Location> boxes, List<Location> targets) {
+    public static Level mapper(BoxType[][] map, Location role, List<Location> boxes, List<Location> targets) {
         Level.Builder builder = new Level.Builder();
         MapObject[][] mapObjects = new MapObject[map.length][];
         for (int i = 0; i < map.length; i++) {
@@ -28,5 +28,15 @@ public class LevelMapper {
                 .setBoxes(boxesMapObj)
                 .setTargets(targetMapObj)
                 .build();
+    }
+
+    public static Level mapper(int[][] baseMap, Location playerLoc, List<Location> boxesList, List<Location> goalsList) {
+        BoxType[][] map = new BoxType[baseMap.length][baseMap[0].length];
+        for (int y = 0; y < baseMap.length; y++) {
+            for (int x = 0; x < baseMap[y].length; x++) {
+                map[y][x] = BoxType.valueOf(baseMap[y][x]);
+            }
+        }
+        return mapper(map, playerLoc, boxesList, goalsList);
     }
 }

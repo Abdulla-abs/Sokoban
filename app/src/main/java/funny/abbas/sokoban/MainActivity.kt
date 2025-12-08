@@ -3,21 +3,30 @@ package funny.abbas.sokoban
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import funny.abbas.sokoban.databinding.ActivityMainBinding
+import funny.abbas.sokoban.page.vm.MainViewModel
+import funny.abbas.sokoban.util.SokobanParser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +94,25 @@ class MainActivity : AppCompatActivity() {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO){
+                try {
+                    val inputStream = assets.open("level/sokoban.levels")
+                    val text = inputStream.bufferedReader().use { it.readText() }
+                    withContext(Dispatchers.Default) {
+                        val allLevels = SokobanParser.parseLevels(text)
+                        viewModel.allLevel.postValue(allLevels)
+                    }
+                } catch (e: IOException) {
+                    throw e
+                }
+            }
+
+        }
     }
+
+
 
     override fun onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {

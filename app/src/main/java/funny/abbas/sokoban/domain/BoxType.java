@@ -12,4 +12,21 @@ public enum BoxType {
     BoxType(int flag) {
         this.flag = flag;
     }
+
+    public static BoxType valueOf(int i) {
+        switch (i) {
+            case 0:
+                return Empty;
+            case 1:
+                return Wall;
+            case 2:
+                return Box;
+            case 3:
+                return Role;
+            case 4:
+                return Target;
+            default:
+                return Empty;
+        }
+    }
 }

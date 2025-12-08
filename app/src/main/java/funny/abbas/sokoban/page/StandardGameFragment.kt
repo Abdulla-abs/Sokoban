@@ -8,10 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import funny.abbas.sokoban.MainActivity
 import funny.abbas.sokoban.R
 import funny.abbas.sokoban.databinding.FragmentStandardGameBinding
 import funny.abbas.sokoban.domain.StandardLevelBoard
+import funny.abbas.sokoban.page.vm.MainViewModel
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,6 +43,7 @@ class StandardGameFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentStandardGameBinding
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +71,12 @@ class StandardGameFragment : Fragment() {
                 .show()
         }
 
+        binding.preLevel.setOnClickListener {
+            mainViewModel.preLevel()
+        }
+        binding.nextLevel.setOnClickListener {
+            mainViewModel.nextLevel()
+        }
         binding.btMoveLeft.setOnClickListener {
             sokobanView.moveLeft()
         }
@@ -77,10 +90,16 @@ class StandardGameFragment : Fragment() {
             sokobanView.moveBottom()
         }
 
-        sokobanView.setLevel(StandardLevelBoard().level1())
 
         (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
             title = "经典关卡"
+        }
+
+        mainViewModel.currentLevel.observe(viewLifecycleOwner) { level ->
+            sokobanView.setLevel(level)
+            (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
+                title = "经典关卡：第${mainViewModel.levelIndex.value}关"
+            }
         }
     }
 
