@@ -2,6 +2,8 @@ package funny.abbas.sokoban.domain;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.util.Pair;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,24 +11,25 @@ import java.util.HashMap;
 
 import funny.abbas.sokoban.MyApplication;
 
-public class ClassicTheme1 implements Theme{
+public class ClassicTheme1 implements Theme {
 
     private Bitmap skinBitmaps;
-    private final HashMap<BoxType,Bitmap> bitmapCache = new HashMap<>();
+    private final HashMap<BoxType, Bitmap> bitmapCache = new HashMap<>();
+    private final HashMap<BoxType, Pair<Float,Float>> sizeRemember = new HashMap<>();
 
     public ClassicTheme1() {
 
     }
 
-    private void ensureSkinGroup(){
-        if (skinBitmaps == null){
+    private void ensureSkinGroup() {
+        if (skinBitmaps == null) {
             initSkinGroup();
         }
     }
 
-    private void initSkinGroup(){
+    private void initSkinGroup() {
         try (InputStream skins = MyApplication.application.getAssets()
-                .open("skin/sokoban_sprites.png")){
+                .open("skin/sokoban_sprites.png")) {
             skinBitmaps = BitmapFactory.decodeStream(skins);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -37,10 +40,24 @@ public class ClassicTheme1 implements Theme{
     public Bitmap getRole(float width, float height) {
         ensureSkinGroup();
         Bitmap cacheBitmap = bitmapCache.get(BoxType.Role);
-        if (cacheBitmap == null){
-            Bitmap bitmap = Bitmap.createBitmap(skinBitmaps, 362, 248, 37, 59);
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) width, (int) height, true);
-            bitmapCache.put(BoxType.Role,scaledBitmap);
+        Pair<Float, Float> rememberPair = sizeRemember.get(BoxType.Role);
+        if (rememberPair != null) {
+            if (rememberPair.first != width || rememberPair.second != height){
+                sizeRemember.put(BoxType.Role,new Pair<>(width,height));
+                cacheBitmap = null;
+            }
+        }else {
+            sizeRemember.put(BoxType.Role,new Pair<>(width,height));
+        }
+        if (cacheBitmap == null) {
+            Bitmap bitmap = Bitmap.createBitmap(skinBitmaps, 361, 248, 37, 59);
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) (width * 0.8), (int) (height * 0.8), true);
+            Bitmap combainBitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
+            Canvas combainCanvas = new Canvas(combainBitmap);
+            combainCanvas.drawBitmap(scaledBitmap, width * 0.1f, height * 0.1f,null);
+            bitmapCache.put(BoxType.Role, combainBitmap);
+            bitmap.recycle();
+            scaledBitmap.recycle();
         }
         return bitmapCache.get(BoxType.Role);
     }
@@ -49,10 +66,20 @@ public class ClassicTheme1 implements Theme{
     public Bitmap getBox(float width, float height) {
         ensureSkinGroup();
         Bitmap cacheBitmap = bitmapCache.get(BoxType.Box);
-        if (cacheBitmap == null){
+        Pair<Float, Float> rememberPair = sizeRemember.get(BoxType.Box);
+        if (rememberPair != null) {
+            if (rememberPair.first != width || rememberPair.second != height){
+                sizeRemember.put(BoxType.Box,new Pair<>(width,height));
+                cacheBitmap = null;
+            }
+        }else {
+            sizeRemember.put(BoxType.Box,new Pair<>(width,height));
+        }
+        if (cacheBitmap == null) {
             Bitmap bitmap = Bitmap.createBitmap(skinBitmaps, 192, 256, 64, 64);
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) width, (int) height, true);
-            bitmapCache.put(BoxType.Box,scaledBitmap);
+            bitmapCache.put(BoxType.Box, scaledBitmap);
+            bitmap.recycle();
         }
         return bitmapCache.get(BoxType.Box);
     }
@@ -61,10 +88,20 @@ public class ClassicTheme1 implements Theme{
     public Bitmap getWall(float width, float height) {
         ensureSkinGroup();
         Bitmap cacheBitmap = bitmapCache.get(BoxType.Wall);
-        if (cacheBitmap == null){
+        Pair<Float, Float> rememberPair = sizeRemember.get(BoxType.Wall);
+        if (rememberPair != null) {
+            if (rememberPair.first != width || rememberPair.second != height){
+                sizeRemember.put(BoxType.Wall,new Pair<>(width,height));
+                cacheBitmap = null;
+            }
+        }else {
+            sizeRemember.put(BoxType.Wall,new Pair<>(width,height));
+        }
+        if (cacheBitmap == null) {
             Bitmap bitmap = Bitmap.createBitmap(skinBitmaps, 0, 0, 64, 64);
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) width, (int) height, true);
-            bitmapCache.put(BoxType.Wall,scaledBitmap);
+            bitmapCache.put(BoxType.Wall, scaledBitmap);
+            bitmap.recycle();
         }
         return bitmapCache.get(BoxType.Wall);
     }
@@ -73,10 +110,20 @@ public class ClassicTheme1 implements Theme{
     public Bitmap getEmpty(float width, float height) {
         ensureSkinGroup();
         Bitmap cacheBitmap = bitmapCache.get(BoxType.Empty);
-        if (cacheBitmap == null){
+        Pair<Float, Float> rememberPair = sizeRemember.get(BoxType.Empty);
+        if (rememberPair != null) {
+            if (rememberPair.first != width || rememberPair.second != height){
+                sizeRemember.put(BoxType.Empty,new Pair<>(width,height));
+                cacheBitmap = null;
+            }
+        }else {
+            sizeRemember.put(BoxType.Empty,new Pair<>(width,height));
+        }
+        if (cacheBitmap == null) {
             Bitmap bitmap = Bitmap.createBitmap(skinBitmaps, 64, 128, 64, 64);
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) width, (int) height, true);
-            bitmapCache.put(BoxType.Empty,scaledBitmap);
+            bitmapCache.put(BoxType.Empty, scaledBitmap);
+            bitmap.recycle();
         }
         return bitmapCache.get(BoxType.Empty);
     }
@@ -85,10 +132,24 @@ public class ClassicTheme1 implements Theme{
     public Bitmap getTarget(float width, float height) {
         ensureSkinGroup();
         Bitmap cacheBitmap = bitmapCache.get(BoxType.Target);
-        if (cacheBitmap == null){
-            Bitmap bitmap = Bitmap.createBitmap(skinBitmaps, 0, 384, 30, 30);
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) width, (int) height, true);
-            bitmapCache.put(BoxType.Target,scaledBitmap);
+        Pair<Float, Float> rememberPair = sizeRemember.get(BoxType.Target);
+        if (rememberPair != null) {
+            if (rememberPair.first != width || rememberPair.second != height){
+                sizeRemember.put(BoxType.Target,new Pair<>(width,height));
+                cacheBitmap = null;
+            }
+        }else {
+            sizeRemember.put(BoxType.Target,new Pair<>(width,height));
+        }
+        if (cacheBitmap == null) {
+            Bitmap bitmap = Bitmap.createBitmap(skinBitmaps, 0, 384, 32, 32);
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) (width * 0.7f), (int) (height * 0.7f), true);
+            Bitmap block = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
+            Canvas combaineCanvas = new Canvas(block);
+            combaineCanvas.drawBitmap(scaledBitmap, width * 0.15f, height * 0.15f, null);
+            bitmapCache.put(BoxType.Target, block);
+            bitmap.recycle();
+            scaledBitmap.recycle();
         }
         return bitmapCache.get(BoxType.Target);
     }

@@ -1,13 +1,14 @@
 package funny.abbas.sokoban.domain;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Role extends MapObject {
 
 
-    public Role(Location location, MapObject[][] map) {
-        super(location, map);
+    public Role(Location location, MapController mapController) {
+        super(location, mapController);
     }
 
     @Override

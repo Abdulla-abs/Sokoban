@@ -3,29 +3,21 @@ package funny.abbas.sokoban.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import funny.abbas.sokoban.domain.Box;
 import funny.abbas.sokoban.domain.BoxType;
-import funny.abbas.sokoban.domain.Empty;
 import funny.abbas.sokoban.domain.Level;
-import funny.abbas.sokoban.domain.Location;
 import funny.abbas.sokoban.domain.MapObject;
-import funny.abbas.sokoban.domain.Role;
 import funny.abbas.sokoban.domain.Skin;
 import funny.abbas.sokoban.domain.Theme;
-import funny.abbas.sokoban.domain.Wall;
 
 public class SokobanView extends View implements Action {
 
-    private final float standerBoxSize = 80f;
-    private float measuredBoxSize = standerBoxSize;
+    private float measuredBoxSize = 80f;
 
     private final Skin skin = Skin.getInstance();
 
@@ -47,76 +39,76 @@ public class SokobanView extends View implements Action {
         int boxColumnCount = controller.level.map.length;
         int boxRowCount = controller.level.map[0].length;
 
-        float standardWidth = boxRowCount * standerBoxSize;
-        float standardHeight = boxColumnCount * standerBoxSize;
-
-        int widthModel = MeasureSpec.getMode(widthMeasureSpec);
-        int heightModel = MeasureSpec.getMode(heightMeasureSpec);
-
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (standardHeight > heightSize || standardWidth > widthSize) {
-            //测量宽高比预期宽高要小，调整格子大小比例
-            float widthOverSize = standardWidth - widthSize;
-            float heightOverSize = standardHeight - heightSize;
-
-            if (widthOverSize > 0 && heightOverSize > 0) {
-                if (widthOverSize > heightOverSize) {
-                    float scanPercent = standardWidth / widthSize;
-                    //result
-                    measuredBoxSize = standerBoxSize * scanPercent;
-                } else {
-                    float scanPercent = standardHeight / heightSize;
-                    //result
-                    measuredBoxSize = standerBoxSize * scanPercent;
-                }
-            } else if (widthOverSize > 0) {
-                float scanPercent = standardWidth / widthSize;
-                //result
-                measuredBoxSize = standerBoxSize * scanPercent;
-            } else if (heightOverSize > 0) {
-                float scanPercent = standardHeight / heightSize;
-                //result
-                measuredBoxSize = standerBoxSize * scanPercent;
-            }
+        if (widthSize < heightSize) {
+            measuredBoxSize = (float) widthSize / boxRowCount;
         } else {
-            float roamingHeight = heightSize - standardHeight;
-            float roamingWidth = widthSize - standardWidth;
-
-            if (roamingWidth > roamingHeight) {
-                float heightPercent = heightSize / standardHeight;
-                measuredBoxSize = standerBoxSize * heightPercent;
-            } else {
-                float widthPercent = widthSize / standardWidth;
-                measuredBoxSize = standerBoxSize * widthPercent;
-            }
+            measuredBoxSize = (float) heightSize / boxColumnCount;
         }
 
-        float measuredWidth = boxRowCount * measuredBoxSize;
-        float measureHeight = boxColumnCount * measuredBoxSize;
-
-        setMeasuredDimension((int) Math.ceil(measuredWidth), (int) Math.ceil(measureHeight));
+        setMeasuredDimension((int) (measuredBoxSize * boxRowCount), (int) (measuredBoxSize * boxColumnCount));
     }
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         if (controller.level == null) return;
 
-        for (int i = 0; i < controller.level.map.length; i++) {
-            for (int j = 0; j < controller.level.map[0].length; j++) {
-                MapObject box = controller.level.map[i][j];
-                Bitmap bitmap = skin.loadSkin(box.getBoxType(), measuredBoxSize, measuredBoxSize);
-                canvas.drawBitmap(bitmap, box.getLocation().getX() * measuredBoxSize,
-                        box.getLocation().getY() * measuredBoxSize, null);
-            }
-        }
+        Bitmap immutableMap = drawBasicMap();
+        canvas.drawBitmap(immutableMap, 0, 0, null);
 
-        for (Location location : controller.level.target) {
+        for (MapObject target : controller.level.getTargets()) {
             Bitmap bitmap = skin.loadSkin(BoxType.Target, measuredBoxSize, measuredBoxSize);
-            canvas.drawBitmap(bitmap, location.getX() * measuredBoxSize, location.getY() * measuredBoxSize,
+            canvas.drawBitmap(bitmap, target.getLocation().getX() * measuredBoxSize,
+                    target.getLocation().getY() * measuredBoxSize,
                     null);
         }
+
+        for (MapObject box : controller.level.boxes) {
+            Bitmap bitmap = skin.loadSkin(BoxType.Box, measuredBoxSize, measuredBoxSize);
+            canvas.drawBitmap(bitmap, box.getLocation().getX() * measuredBoxSize,
+                    box.getLocation().getY() * measuredBoxSize,
+                    null);
+        }
+
+        MapObject role = controller.level.getRole();
+        Bitmap bitmap = skin.loadSkin(BoxType.Role, measuredBoxSize, measuredBoxSize);
+        canvas.drawBitmap(bitmap, role.getLocation().getX() * measuredBoxSize,
+                role.getLocation().getY() * measuredBoxSize, null);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        basicMapNeedInvalidate = true;
+    }
+
+    private Bitmap basicMap;
+    private boolean basicMapNeedInvalidate = false;
+
+    /**
+     * 对于基础地图，即不可动的方块部分，仅绘制一次，此后一直复用，以减少绘制压力
+     * @return 基础地图
+     */
+    private Bitmap drawBasicMap() {
+        if (basicMap == null || basicMapNeedInvalidate) {
+            if (basicMap != null) {//重绘地图情况下，回收上一次的地图内存
+                basicMap.recycle();
+            }
+            basicMap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(basicMap);
+            for (int i = 0; i < controller.level.map.length; i++) {
+                for (int j = 0; j < controller.level.map[0].length; j++) {
+                    MapObject box = controller.level.map[i][j];
+                    Bitmap bitmap = skin.loadSkin(box.getBoxType(), measuredBoxSize, measuredBoxSize);
+                    canvas.drawBitmap(bitmap, box.getLocation().getX() * measuredBoxSize,
+                            box.getLocation().getY() * measuredBoxSize, null);
+                }
+            }
+            basicMapNeedInvalidate = false;
+        }
+        return basicMap;
     }
 
     public void setStateListener(GameStateListener stateListener) {

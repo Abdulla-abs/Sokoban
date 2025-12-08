@@ -458,14 +458,15 @@ public class CreateSokobanLevelView extends View {
     }
 
     public Level getResult() {
-        List<Pair<Integer, Integer>> allTruePositions = targets.getAllTruePositions();
-        List<Location> target = allTruePositions.stream().map(new Function<Pair<Integer, Integer>, Location>() {
-            @Override
-            public Location apply(Pair<Integer, Integer> integerIntegerPair) {
-                return new Location(integerIntegerPair.second, integerIntegerPair.first);
-            }
-        }).collect(Collectors.toList());
-        return LevelMapper.mapper(level, target);
+//        List<Pair<Integer, Integer>> allTruePositions = targets.getAllTruePositions();
+//        List<Location> target = allTruePositions.stream().map(new Function<Pair<Integer, Integer>, Location>() {
+//            @Override
+//            public Location apply(Pair<Integer, Integer> integerIntegerPair) {
+//                return new Location(integerIntegerPair.second, integerIntegerPair.first);
+//            }
+//        }).collect(Collectors.toList());
+//        return LevelMapper.mapper(level, target);
+        return null;
     }
 
 }

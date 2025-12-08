@@ -1,10 +1,12 @@
 package funny.abbas.sokoban.domain;
 
+import java.util.List;
+
 public class Empty extends MapObject {
 
 
-    public Empty(Location location, MapObject[][] map) {
-        super(location, map);
+    public Empty(Location location, MapController mapController) {
+        super(location, mapController);
     }
 
     @Override
@@ -34,30 +36,22 @@ public class Empty extends MapObject {
 
     @Override
     public Location moveLeft(Location origin) {
-        Location currentlocation = location;
-        location = origin;
-        return currentlocation;
+        return location;
     }
 
     @Override
     public Location moveUp(Location origin) {
-        Location currentlocation = location;
-        location = origin;
-        return currentlocation;
+        return location;
     }
 
     @Override
     public Location moveRight(Location origin) {
-        Location currentlocation = location;
-        location = origin;
-        return currentlocation;
+        return location;
     }
 
     @Override
     public Location moveBottom(Location origin) {
-        Location currentlocation = location;
-        location = origin;
-        return currentlocation;
+        return location;
     }
 
 

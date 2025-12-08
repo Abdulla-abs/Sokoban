@@ -2,11 +2,14 @@ package funny.abbas.sokoban.view;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import funny.abbas.sokoban.domain.Level;
 import funny.abbas.sokoban.domain.Location;
 import funny.abbas.sokoban.domain.MapObject;
+import funny.abbas.sokoban.domain.Target;
 
 public class Controller implements Action {
     protected Level level;
@@ -93,9 +96,17 @@ public class Controller implements Action {
     private boolean checkGameOver() {
         List<MapObject> boxes = level.getBoxes();
         if (boxes.isEmpty()) return false;
-        List<Location> currentBoxes = boxes.stream().map(MapObject::getLocation).collect(Collectors.toList());
-        List<Location> targets = level.target;
-        return currentBoxes.size() == targets.size()
-                && new HashSet<>(currentBoxes).equals(new HashSet<>(targets));
+        List<MapObject> targets = level.getTargets();
+        if (targets.isEmpty()) return false;
+
+        HashSet<Location> boxesHashSet = new HashSet<>();
+        for (MapObject box : boxes) {
+            boxesHashSet.add(box.getLocation());
+        }
+        HashSet<Location> targetHashSet = new HashSet<>();
+        for (MapObject target : targets) {
+            targetHashSet.add(target.getLocation());
+        }
+        return boxesHashSet.containsAll(targetHashSet);
     }
 }

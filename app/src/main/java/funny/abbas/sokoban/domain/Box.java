@@ -1,5 +1,6 @@
 package funny.abbas.sokoban.domain;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -8,8 +9,8 @@ import java.util.function.Predicate;
 public class Box extends MapObject {
 
 
-    public Box(Location location, MapObject[][] map) {
-        super(location, map);
+    public Box(Location location, MapController mapController) {
+        super(location, mapController);
     }
 
     @Override
@@ -22,7 +23,7 @@ public class Box extends MapObject {
         return getLeftObj().filter(new Predicate<MapObject>() {
             @Override
             public boolean test(MapObject mapObject) {
-                return mapObject instanceof Empty;
+                return mapObject instanceof Empty || mapObject instanceof Target;
             }
         }).map(new Function<MapObject, Boolean>() {
             @Override
@@ -37,7 +38,7 @@ public class Box extends MapObject {
         return getTopObj().filter(new Predicate<MapObject>() {
             @Override
             public boolean test(MapObject mapObject) {
-                return mapObject instanceof Empty;
+                return mapObject instanceof Empty || mapObject instanceof Target;
             }
         }).map(new Function<MapObject, Boolean>() {
             @Override
@@ -52,7 +53,7 @@ public class Box extends MapObject {
         return getRightObj().filter(new Predicate<MapObject>() {
             @Override
             public boolean test(MapObject mapObject) {
-                return mapObject instanceof Empty;
+                return mapObject instanceof Empty || mapObject instanceof Target;
             }
         }).map(new Function<MapObject, Boolean>() {
             @Override
@@ -67,7 +68,7 @@ public class Box extends MapObject {
         return getBottomObj().filter(new Predicate<MapObject>() {
             @Override
             public boolean test(MapObject mapObject) {
-                return mapObject instanceof Empty;
+                return mapObject instanceof Empty || mapObject instanceof Target;
             }
         }).map(new Function<MapObject, Boolean>() {
             @Override
