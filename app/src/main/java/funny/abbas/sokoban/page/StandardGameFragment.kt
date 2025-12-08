@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import funny.abbas.sokoban.MainActivity
 import funny.abbas.sokoban.R
 import funny.abbas.sokoban.databinding.FragmentStandardGameBinding
@@ -77,6 +78,10 @@ class StandardGameFragment : Fragment() {
         }
 
         sokobanView.setLevel(StandardLevelBoard().level1())
+
+        (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
+            title = "经典关卡"
+        }
     }
 
     companion object {

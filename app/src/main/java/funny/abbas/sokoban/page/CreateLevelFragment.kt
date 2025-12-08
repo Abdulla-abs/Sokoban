@@ -5,10 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import funny.abbas.sokoban.MyApplication
 import funny.abbas.sokoban.R
 import funny.abbas.sokoban.database.bean.CustomLevel
 import funny.abbas.sokoban.databinding.FragmentCreateLevelBinding
+import funny.abbas.sokoban.domain.CreateSokobanStateMachine
+import funny.abbas.sokoban.state.createsokoban.CreateSokobanAction
+import funny.abbas.sokoban.state.createsokoban.CreateSokobanState
+import funny.abbas.sokoban.util.Result
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -50,6 +56,12 @@ class CreateLevelFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.previousState.setOnClickListener {
+            binding.createView.preState()
+        }
+        binding.nextState.setOnClickListener {
+            binding.createView.nextState()
+        }
         binding.addRow.setOnClickListener {
             binding.createView.addRow()
         }
@@ -62,21 +74,44 @@ class CreateLevelFragment : Fragment() {
         binding.reduceColumn.setOnClickListener {
             binding.createView.reduceColumn()
         }
+        binding.createView.setListener { newState ->
+            initCreateViewState(newState)
+        }
 
         binding.save.setOnClickListener {
             val result = binding.createView.result
-            var serialize = result.serialize()
-            val customLevel = CustomLevel()
-            val level = customLevel.apply {
-                data = serialize
-                changeTime = Date()
+            if (result is Result.Success) {
+                var serialize = result.data.serialize()
+                val customLevel = CustomLevel()
+                val level = customLevel.apply {
+                    data = serialize
+                    changeTime = Date()
+                }
+                val subscribe = Observable.fromAction<Unit> {
+                    MyApplication.appDatabase.customLevelDao
+                        .saveCustomLevel(level)
+                }.subscribeOn(Schedulers.io())
+                    .subscribe({}, {})
+            } else if (result is Result.Failure) {
+                Toast.makeText(requireContext(), result.e.message, Toast.LENGTH_SHORT).show()
             }
-            Observable.fromAction<Unit> {
-                MyApplication.appDatabase.customLevelDao
-                    .saveCustomLevel(level)
-            }.subscribeOn(Schedulers.io())
-                .subscribe({}, {})
+
         }
+
+        initCreateViewState(binding.createView.currentState())
+    }
+
+    private fun initCreateViewState(newState: CreateSokobanState){
+        val canBeNextStateOp =
+            CreateSokobanStateMachine.getTargetStatus(newState, CreateSokobanAction.TRANSFORM)
+        val canBePreStateOp =
+            CreateSokobanStateMachine.getTargetStatus(newState, CreateSokobanAction.BACK)
+        (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
+            title = "创作关卡：${newState.desc}"
+        }
+        binding.previousState.isEnabled = canBePreStateOp != null
+        binding.nextState.isEnabled = canBeNextStateOp != null
+        binding.save.isEnabled = newState == CreateSokobanState.PUT_ROLE
     }
 
     companion object {

@@ -34,12 +34,15 @@ public class Level {
                     integers.add(BoxType.Wall.flag);
                 } else if (mapObject instanceof Empty) {
                     integers.add(BoxType.Empty.flag);
-                } else if (mapObject instanceof Target) {
-                    integers.add(BoxType.Target.flag);
                 }
             }
         }
 
+        integers.add(targets.size());
+        for (MapObject target : targets) {
+            integers.add(target.getLocation().getX());
+            integers.add(target.getLocation().getY());
+        }
         for (MapObject box : boxes) {
             integers.add(box.getLocation().getX());
             integers.add(box.getLocation().getY());
@@ -53,21 +56,21 @@ public class Level {
 
     public static Level parse(List<Integer> origin) {
         if (origin == null || origin.size() < 2) {
-            throw new IllegalStateException(); // 数据不完整
+            throw new IllegalStateException("数据不完整");
         }
 
         Builder builder = new Builder();
 
+        int index = 0;
+
         // 读取地图尺寸
-        int rows = origin.get(0);
-        int cols = origin.get(1);
+        int rows = origin.get(index++);
+        int cols = origin.get(index++);
 
-
-        // 创建新地图
+        // 创建地图
         MapObject[][] newMap = new MapObject[rows][cols];
 
         // 解析地图数据
-        int index = 2; // 从第2个元素开始是地图数据
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 int flag = origin.get(index++);
@@ -75,29 +78,34 @@ public class Level {
             }
         }
 
-        // 解析目标点（target位置）
-        List<MapObject> newBoxes = new ArrayList<>();
-        int boxRange = origin.size() - 2;
-        while (index < boxRange) {
-            // 检查是否有完整的目标点数据（需要x和y两个值）
-            if (index + 1 >= origin.size()) {
-                break; // 数据不完整，跳过
-            }
+        // 读取目标点和箱子的数量 N
+        int count = origin.get(index++);  // 这个才是关键：有 count 个目标 和 count 个箱子
 
+        // 解析目标点
+        List<MapObject> newTargets = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
             int x = origin.get(index++);
             int y = origin.get(index++);
+            newTargets.add(builder.getMapObjectWithType(BoxType.Target, new Location(x, y)));
+        }
 
+        // 解析箱子
+        List<MapObject> newBoxes = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            int x = origin.get(index++);
+            int y = origin.get(index++);
             newBoxes.add(builder.getMapObjectWithType(BoxType.Box, new Location(x, y)));
         }
 
-        MapObject newRole = builder.getMapObjectWithType(BoxType.Role, new Location(
-                origin.get(origin.size() - 2),
-                origin.get(origin.size() - 1)
-        ));
+        // 最后两个是玩家坐标
+        int playerX = origin.get(index++);
+        int playerY = origin.get(index++);
+        MapObject newRole = builder.getMapObjectWithType(BoxType.Role, new Location(playerX, playerY));
 
         return builder.setMap(newMap)
                 .setBoxes(newBoxes)
                 .setRole(newRole)
+                .setTargets(newTargets)
                 .build();
     }
 

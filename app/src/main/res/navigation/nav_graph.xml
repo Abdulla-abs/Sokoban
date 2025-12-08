@@ -20,4 +20,8 @@
         android:name="funny.abbas.sokoban.page.CreateLevelFragment"
         android:label="fragment_create_level"
         tools:layout="@layout/fragment_create_level" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="funny.abbas.sokoban.page.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>

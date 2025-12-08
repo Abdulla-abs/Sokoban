@@ -18,7 +18,8 @@ class CustomGameViewModel : ViewModel {
     private var page = 0
 
     private var levelList: MutableList<CustomLevel> = ArrayList(pageSize)
-    private var currentIndex: Int = 0
+    var currentIndex: Int = 0
+        private set
 
     val levelFlow = MutableSharedFlow<Result<Level>>()
 

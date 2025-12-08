@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="外观">
+
+        <ListPreference
+            app:defaultValue="0"
+            app:entries="@array/skin_entries"
+            app:entryValues="@array/skin_values"
+            app:key="skin"
+            app:title="主题"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

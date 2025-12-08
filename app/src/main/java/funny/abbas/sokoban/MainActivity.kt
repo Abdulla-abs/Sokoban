@@ -76,6 +76,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.create_level -> { /* 退出登录 */
                     navController.navigate(R.id.createLevelFragment)
                 }
+
+                R.id.setting -> {
+                    navController.navigate(R.id.settingsFragment)
+                }
             }
             // 点击后自动关掉侧滑菜单（推荐）
             binding.drawerLayout.closeDrawer(GravityCompat.START)

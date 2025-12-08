@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.preference)
     val nav_version = "2.7.7"   // 2025 年最新稳定版
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
@@ -60,6 +61,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")  // 或更高版本
     implementation("androidx.activity:activity-ktx:1.9.2")   // 提供 viewModels() 扩展
     implementation("androidx.fragment:fragment-ktx:1.8.4") // Fragment 也需要
+
+    implementation("com.google.guava:guava:33.4.0-android")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

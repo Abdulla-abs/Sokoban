@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import funny.abbas.sokoban.MyApplication
@@ -94,6 +95,9 @@ class CustomGameFragment : Fragment() {
         lifecycleScope.launch {
             viewmodel.levelFlow.collect { levelResult ->
                 if (levelResult.isSuccess) {
+                    (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
+                        title = "自定义关卡：第${viewmodel.currentIndex}关"
+                    }
                     binding.sokoban.setLevel(levelResult.getOrNull())
                 }
                 if (levelResult.isFailure) {

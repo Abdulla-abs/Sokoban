@@ -117,6 +117,7 @@ public class SokobanView extends View implements Action {
 
     public void setLevel(Level level) {
         controller.level = level;
+        basicMapNeedInvalidate=true;
         requestLayout();
     }
 

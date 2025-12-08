@@ -6,13 +6,15 @@
 
         <item
             android:id="@+id/standard_level"
-            android:title="游戏关卡" />
+            android:title="经典关卡" />
         <item
             android:id="@+id/custom_level"
             android:title="自定义关卡" />
         <item
             android:id="@+id/create_level"
-            android:title="创建自定义关卡" />
-
+            android:title="创作关卡" />
+        <item
+            android:id="@+id/setting"
+            android:title="设置" />
     </group>
 </menu>

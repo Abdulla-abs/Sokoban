@@ -1,47 +1,45 @@
 package funny.abbas.sokoban.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Pair;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.function.Consumer;
 
-import funny.abbas.sokoban.domain.Box;
 import funny.abbas.sokoban.domain.BoxType;
+import funny.abbas.sokoban.domain.CreateSokobanDataLayer;
+import funny.abbas.sokoban.domain.CreateSokobanMode;
 import funny.abbas.sokoban.domain.Level;
 import funny.abbas.sokoban.domain.LevelMapper;
 import funny.abbas.sokoban.domain.Location;
-import funny.abbas.sokoban.domain.MapObject;
-import funny.abbas.sokoban.util.Bitmap2DSparseArray;
+import funny.abbas.sokoban.domain.Skin;
+import funny.abbas.sokoban.state.createsokoban.CreateSokobanAction;
+import funny.abbas.sokoban.state.createsokoban.CreateSokobanState;
+import funny.abbas.sokoban.util.Result;
 
 public class CreateSokobanLevelView extends View {
 
-    private final float standerBoxSize = 80f;
-    private float defaultBottomBarMargin = 120f;
-    private float measuredBoxSize = standerBoxSize;
-    private float targetCircleRadius = (standerBoxSize - standerBoxSize * 0.2f) / 2;
-
-    private BoxType[][] level = new BoxType[6][6];
-    //java.lang.ArrayIndexOutOfBoundsException: length=6; index=6
-    //at funny.abbas.sokoban.view.CreateSokobanLevelView.onDraw(CreateSokobanLevelView.java:131)
-    // 在类成员位置添加
+    private static final String TAG = "CreateSokobanLevelView";
+    //调整此参数以间隔棋盘和工具栏距离
+    private final float defaultBottomBarMargin = 120f;
+    private float measuredBoxSize = 80f;
     private int gridRows = 6;    // 网格实际行数（固定）
     private int gridCols = 6;    // 网格实际列数（固定）
-    private final Bitmap2DSparseArray targets = new Bitmap2DSparseArray();
-
-    private final Paint defaultPaint = new Paint();
-    private final Paint targetCirclePaint = new Paint();
 
 
     // 记录被拖动的方块类型
@@ -56,21 +54,26 @@ public class CreateSokobanLevelView extends View {
     private int dropCol = -1;
     private int dropRow = -1;
 
+    private final Paint halfAlphaPaint = new Paint();
+    private final Paint cancelAreaPaint = new Paint();
+    private final Paint cancelTextPaint = new Paint();
+    private final Rect textBounds = new Rect();
+
+    private final Skin skin = Skin.getInstance();
+    private final CreateSokobanMode stateMode = new CreateSokobanMode();
+    private final CreateSokobanDataLayer dataLayer = new CreateSokobanDataLayer();
+    private CreateSokobanListener listener;
+
     public CreateSokobanLevelView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        halfAlphaPaint.setAlpha(120);
+        cancelAreaPaint.setColor(Color.RED);
+        cancelAreaPaint.setAlpha(160);
 
-        for (BoxType[] boxTypes : level) {
-            Arrays.fill(boxTypes, BoxType.Empty);
-        }
-        gridRows = level.length;
-        gridCols = level[0].length;
-        targetCirclePaint.setColor(Color.RED);
-        targetCirclePaint.setAntiAlias(true);
-        targetCirclePaint.setStyle(Paint.Style.STROKE);
-        targetCirclePaint.setStrokeWidth(standerBoxSize * 0.1f);
+        cancelTextPaint.setColor(Color.RED);
+        cancelTextPaint.setAntiAlias(true);
+
     }
-
-    //信 宇 人
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -79,53 +82,24 @@ public class CreateSokobanLevelView extends View {
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        float standardWidth = gridCols * standerBoxSize;
-        float standardHeight = gridRows * standerBoxSize + standerBoxSize + defaultBottomBarMargin;
-
-        if (standardHeight > heightSize || standardWidth > widthSize) {
-            //测量宽高比预期宽高要小，调整格子大小比例
-            float widthOverSize = standardWidth - widthSize;
-            float heightOverSize = standardHeight - heightSize;
-
-            if (widthOverSize > 0 && heightOverSize > 0) {
-                if (widthOverSize > heightOverSize) {
-                    float scanPercent = standardWidth / widthSize;
-                    //result
-                    measuredBoxSize = standerBoxSize * scanPercent;
-                } else {
-                    float scanPercent = standardHeight / heightSize;
-                    //result
-                    measuredBoxSize = standerBoxSize * scanPercent;
-                }
-            } else if (widthOverSize > 0) {
-                float scanPercent = standardWidth / widthSize;
-                //result
-                measuredBoxSize = standerBoxSize * scanPercent;
-            } else if (heightOverSize > 0) {
-                float scanPercent = standardHeight / heightSize;
-                //result
-                measuredBoxSize = standerBoxSize * scanPercent;
-            }
+        if (widthSize < heightSize) {
+            measuredBoxSize = (float) widthSize / gridRows;
         } else {
-            float roamingHeight = heightSize - standardHeight;
-            float roamingWidth = widthSize - standardWidth;
-
-            if (roamingWidth > roamingHeight) {
-                float heightPercent = heightSize / standardHeight;
-                measuredBoxSize = standerBoxSize * heightPercent;
-            } else {
-                float widthPercent = widthSize / standardWidth;
-                measuredBoxSize = standerBoxSize * widthPercent;
-            }
+            measuredBoxSize = (float) heightSize / gridCols;
         }
 
         float measuredWidth = gridCols * measuredBoxSize;
         float measureHeight = gridRows * measuredBoxSize + measuredBoxSize + defaultBottomBarMargin;
-        targetCircleRadius = (measuredBoxSize - measuredBoxSize * 0.2f) / 2;
-        targetCirclePaint.setStrokeWidth(measuredBoxSize * 0.1f);
+        float sp = spFromCell(measuredBoxSize);
+        cancelTextPaint.setTextSize(sp * getResources().getDisplayMetrics().density);
 
         setMeasuredDimension((int) Math.ceil(measuredWidth), (int) Math.ceil(measureHeight));
     }
+
+    private final List<BoxType> basicBoxType = Arrays.asList(BoxType.Empty, BoxType.Wall);
+    private final List<BoxType> targetBoxType = List.of(BoxType.Target);
+    private final List<BoxType> boxBoxType = List.of(BoxType.Box);
+    private final List<BoxType> roleBoxType = List.of(BoxType.Role);
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
@@ -133,109 +107,88 @@ public class CreateSokobanLevelView extends View {
 
         for (int i = 0; i < gridRows; i++) {
             for (int j = 0; j < gridCols; j++) {
-                switch (level[i][j]) {
-                    case Role:
-                        defaultPaint.setColor(Color.CYAN);
-                        break;
-                    case Box:
-                        defaultPaint.setColor(Color.GREEN);
-                        break;
-                    case Wall:
-                        defaultPaint.setColor(Color.BLACK);
-                        break;
-                    case Empty:
-                        defaultPaint.setColor(Color.WHITE);
-
-                        break;
-                }
-                canvas.drawRect(j * measuredBoxSize, i * measuredBoxSize,
-                        j * measuredBoxSize + measuredBoxSize,
-                        i * measuredBoxSize + measuredBoxSize,
-                        defaultPaint);
-
-                boolean in = targets.get(i, j);
-                if (in) {
-                    canvas.drawCircle(j * measuredBoxSize + measuredBoxSize / 2,
-                            i * measuredBoxSize + measuredBoxSize / 2, targetCircleRadius,
-                            targetCirclePaint);
-                }
+                Bitmap bitmap = skin.loadSkin(dataLayer.getBasicMap().get(i, j), measuredBoxSize, measuredBoxSize);
+                canvas.drawBitmap(bitmap, j * measuredBoxSize, i * measuredBoxSize,
+                        null);
             }
         }
 
+        for (Location target : dataLayer.getTargets()) {
+            Bitmap bitmap = skin.loadSkin(BoxType.Target, measuredBoxSize, measuredBoxSize);
+            canvas.drawBitmap(bitmap, target.getX() * measuredBoxSize,
+                    target.getY() * measuredBoxSize,
+                    null);
+        }
+
+        for (Location box : dataLayer.getBoxes()) {
+            Bitmap bitmap = skin.loadSkin(BoxType.Box, measuredBoxSize, measuredBoxSize);
+            canvas.drawBitmap(bitmap, box.getX() * measuredBoxSize,
+                    box.getY() * measuredBoxSize,
+                    null);
+        }
+
+        dataLayer.getRole().ifPresent(new Consumer<Location>() {
+            @Override
+            public void accept(Location location) {
+                Bitmap bitmap = skin.loadSkin(BoxType.Role, measuredBoxSize, measuredBoxSize);
+                canvas.drawBitmap(bitmap, location.getX() * measuredBoxSize,
+                        location.getY() * measuredBoxSize,
+                        null);
+            }
+        });
+
 
         //这部分要拖动到上面的创建的格子当中
-        BoxType[] boxTypes = BoxType.values();
-        float boxWidth = boxTypes.length * measuredBoxSize;
+        List<BoxType> stateBoxType = Collections.emptyList();
+        switch (stateMode.getCurrentState()) {
+            case PUT_BASIC:
+                stateBoxType = basicBoxType;
+                break;
+            case PUT_TARGET:
+                stateBoxType = targetBoxType;
+                break;
+            case PUT_BOX:
+                stateBoxType = boxBoxType;
+                break;
+            case PUT_ROLE:
+                stateBoxType = roleBoxType;
+                break;
+            default:
+                break;
+        }
+        float boxWidth = stateBoxType.size() * measuredBoxSize;
         float margin = (getWidth() - boxWidth) / 2;
         float bottomBarY = gridRows * measuredBoxSize + defaultBottomBarMargin;
-        for (int i = 0; i < boxTypes.length; i++) {
-            BoxType value = boxTypes[i];
-            switch (value) {
-                case Role:
-                    defaultPaint.setColor(Color.CYAN);
-                    break;
-                case Box:
-                    defaultPaint.setColor(Color.GREEN);
-                    break;
-                case Wall:
-                    defaultPaint.setColor(Color.BLACK);
-                    break;
-                case Empty:
-                    defaultPaint.setColor(Color.WHITE);
-                    break;
-                case Target:
-                    defaultPaint.setColor(Color.RED);
-                    break;
-            }
-            canvas.drawRect(i * measuredBoxSize + margin,
+        for (int i = 0; i < stateBoxType.size(); i++) {
+            BoxType value = stateBoxType.get(i);
+            Bitmap bitmap = skin.loadSkin(value, measuredBoxSize, measuredBoxSize);
+            canvas.drawBitmap(bitmap, i * measuredBoxSize + margin,
                     bottomBarY,
-                    i * measuredBoxSize + measuredBoxSize + margin,
-                    bottomBarY + measuredBoxSize,
-                    defaultPaint);
+                    null);
+            Log.i(TAG, "measuredBoxSize: " + measuredBoxSize + "\nmargin:" + margin);
         }
 
 
         // --- 绘制拖动阴影 ---
         if (draggedBoxType != null && currentDragX != -1f) {
-
-            // 1. 设置被拖动方块的颜色 (可以添加透明度，使其看起来像“阴影”)
-            switch (draggedBoxType) {
-                case Role:
-                    defaultPaint.setColor(Color.CYAN);
-                    break;
-                case Box:
-                    defaultPaint.setColor(Color.GREEN);
-                    break;
-                case Wall:
-                    defaultPaint.setColor(Color.BLACK);
-                    break;
-                case Empty:
-                    defaultPaint.setColor(Color.WHITE);
-
-                    break;
-                case Target:
-                    defaultPaint.setColor(Color.RED);
-                    break;
+            Bitmap bitmap = skin.loadSkin(draggedBoxType, measuredBoxSize, measuredBoxSize);
+            //绘制预放置格子
+            if (dropCol >= 0 && dropCol < gridCols && dropRow >= 0 && dropRow < gridRows) {
+                canvas.drawBitmap(bitmap, dropCol * measuredBoxSize, dropRow * measuredBoxSize,
+                        null);
             }
-// 可以通过设置 alpha 值让拖动阴影变透明
-            defaultPaint.setAlpha(180); // 180 表示半透明
-
             // 2. 绘制拖动阴影，以 currentDragX, currentDragY 为中心点或左上角
             // 这里使用 currentDragX/Y 作为左上角绘制
-            canvas.drawRect(currentDragX - measuredBoxSize / 2, currentDragY - measuredBoxSize / 2,
-                    currentDragX + measuredBoxSize / 2,
-                    currentDragY + measuredBoxSize / 2,
-                    defaultPaint);
-
-            if (dropCol >= 0 && dropRow >= 0) {
-                canvas.drawRect(dropCol * measuredBoxSize, dropRow * measuredBoxSize,
-                        dropCol * measuredBoxSize + measuredBoxSize,
-                        dropRow * measuredBoxSize + measuredBoxSize,
-                        defaultPaint);
-            }
-
-            // 3. 恢复画笔的透明度
-            defaultPaint.setAlpha(255);
+            canvas.drawBitmap(bitmap, currentDragX - measuredBoxSize / 2, currentDragY - measuredBoxSize / 2,
+                    halfAlphaPaint);
+            //绘制取消区域
+            canvas.drawRect(0, gridRows * measuredBoxSize, getWidth(),
+                    getHeight(), cancelAreaPaint);
+            String text = "拖到此处取消";
+            cancelTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+            canvas.drawText(text, (getWidth() - textBounds.width()) / 2f,
+                    gridRows * measuredBoxSize + defaultBottomBarMargin + textBounds.height() / 2f,
+                    cancelTextPaint);
         }
     }
 
@@ -256,26 +209,36 @@ public class CreateSokobanLevelView extends View {
 
                 // 检查是否在网格范围内
                 if (row >= 0 && row < gridRows && col >= 0 && col < gridCols) {
-                    boolean in = targets.get(row, col);
-                    if (in) {
-                        targets.set(row, col, false);
-                        invalidate();
-                    } else {
-                        draggedBoxType = level[row][col];
-// 在拖动开始时，将原始位置设为空
-                        level[row][col] = BoxType.Empty;
-                        invalidate(); // 重绘，隐藏被拖动的方块
-                    }
+                    draggedBoxType = dataLayer.getBasicMap().get(row, col);
+                    // 在拖动开始时，将原始位置设为空
+                    dataLayer.remove(row, col);
+                    invalidate(); // 重绘，隐藏被拖动的方块
                 }
                 // 2. 检测是否点击了底部的工具栏方块
                 else if (y > bottomBarY && y < bottomBarY + measuredBoxSize) {
 
-                    BoxType[] boxTypes = BoxType.values();
-                    float roamingWidth = getWidth() - boxTypes.length * measuredBoxSize;
+                    List<BoxType> stateBoxType = Collections.emptyList();
+                    switch (stateMode.getCurrentState()) {
+                        case PUT_BASIC:
+                            stateBoxType = basicBoxType;
+                            break;
+                        case PUT_TARGET:
+                            stateBoxType = targetBoxType;
+                            break;
+                        case PUT_BOX:
+                            stateBoxType = boxBoxType;
+                            break;
+                        case PUT_ROLE:
+                            stateBoxType = roleBoxType;
+                            break;
+                        default:
+                            break;
+                    }
+                    float roamingWidth = getWidth() - stateBoxType.size() * measuredBoxSize;
                     int toolCol = (int) ((x - roamingWidth / 2) / measuredBoxSize);
-                    if (toolCol >= 0 && toolCol < boxTypes.length) {
+                    if (toolCol >= 0 && toolCol < stateBoxType.size()) {
                         // 从工具栏拖出
-                        draggedBoxType = boxTypes[toolCol];
+                        draggedBoxType = stateBoxType.get(toolCol);
                     }
                 }
 
@@ -303,18 +266,12 @@ public class CreateSokobanLevelView extends View {
             case MotionEvent.ACTION_CANCEL:
                 if (draggedBoxType != null) {
                     // 放置操作
-
-
                     // 检查是否放置到网格的有效位置
                     if (dropRow >= 0 && dropRow < gridRows &&
                             dropCol >= 0 && dropCol < gridCols) {
 
                         // 放置方块，更新level数组
-                        if (draggedBoxType == BoxType.Target) {
-                            targets.set(dropRow, dropCol, true);
-                        } else {
-                            level[dropRow][dropCol] = draggedBoxType;
-                        }
+                        dataLayer.put(draggedBoxType, dropCol, dropRow);
                     }
                     // 如果放置在网格外部（或者您想实现拖回原始位置的逻辑），则可以在这里处理
 
@@ -333,140 +290,93 @@ public class CreateSokobanLevelView extends View {
     }
 
     public void addRow() {
-        level = addRow(level);
         gridRows++;                    // 加上这行
+        dataLayer.expandRows();
         requestLayout();
         invalidate();
     }
 
     public void addColumn() {
-        level = addColumn(level);
         gridCols++;                    // 加上这行
+        dataLayer.expandColumns();
         requestLayout();
         invalidate();
     }
 
     public void reduceRow() {
         if (gridRows <= 3) return;     // 建议加个最小限制
-        level = removeRow(level, level.length - 1);
         gridRows--;
+        dataLayer.shrinkRows();
         requestLayout();
         invalidate();
     }
 
     public void reduceColumn() {
         if (gridCols <= 3) return;
-        level = removeColumn(level, level[0].length - 1);
         gridCols--;
+        dataLayer.shrinkColumns();
         requestLayout();
         invalidate();
     }
 
-    // 新增一行（到末尾）
-    private BoxType[][] addRow(BoxType[][] original) {
-        int oldRows = original.length;
-        int cols = oldRows > 0 ? original[0].length : 0;
-
-        BoxType[][] newArray = new BoxType[oldRows + 1][cols];
-
-        // 复制原数据
-        for (int i = 0; i < oldRows; i++) {
-            System.arraycopy(original[i], 0, newArray[i], 0, cols);
+    public Result<Level> getResult() {
+        BoxType[][] array = dataLayer.getBasicMap().toArray(BoxType.class);
+        Optional<Location> role = dataLayer.getRole();
+        ArrayList<Location> targets = dataLayer.getTargets();
+        ArrayList<Location> boxes = dataLayer.getBoxes();
+        if (role.isEmpty()) {
+            return Result.failure(new IllegalArgumentException("还没有设置主角"));
         }
-
-        // 初始化新行
-        newArray[oldRows] = new BoxType[cols];
-        Arrays.fill(newArray[oldRows], BoxType.Empty);
-
-        return newArray;
+        if (targets.isEmpty()) {
+            return Result.failure(new IllegalArgumentException("还没有设置目标地块"));
+        }
+        if (boxes.isEmpty()) {
+            return Result.failure(new IllegalArgumentException("还没有设置箱子"));
+        }
+        if (targets.size() != boxes.size()) {
+            return Result.failure(new IllegalArgumentException("目标地块和箱子数量不对等"));
+        }
+        return Result.success(LevelMapper.mapper(array, role.get(), boxes, targets));
     }
 
-    // 新增一列（到末尾）
-    private BoxType[][] addColumn(BoxType[][] original) {
-        int rows = original.length;
-        int oldCols = rows > 0 ? original[0].length : 0;
-
-        BoxType[][] newArray = new BoxType[rows][oldCols + 1];
-
-        for (int i = 0; i < rows; i++) {
-            System.arraycopy(original[i], 0, newArray[i], 0, oldCols);
-            // 新列元素默认是null，可以初始化
-            newArray[i][oldCols] = BoxType.Empty;
-        }
-
-        return newArray;
-    }
-
-    // 减少一行（删除指定行，返回新数组）
-    private BoxType[][] removeRow(BoxType[][] original, int rowToRemove) {
-        if (original == null || rowToRemove < 0 || rowToRemove >= original.length) {
-            return original;
-        }
-
-        int oldRows = original.length;
-        int cols = oldRows > 0 ? original[0].length : 0;
-
-        BoxType[][] newArray = new BoxType[oldRows - 1][cols];
-
-        // 复制 rowToRemove 之前的数据
-        for (int i = 0; i < rowToRemove; i++) {
-            System.arraycopy(original[i], 0, newArray[i], 0, cols);
-        }
-
-        // 复制 rowToRemove 之后的数据
-        for (int i = rowToRemove + 1; i < oldRows; i++) {
-            System.arraycopy(original[i], 0, newArray[i - 1], 0, cols);
-        }
-
-        return newArray;
-    }
-
-    // 减少一列（删除指定列，返回新数组）
-    private BoxType[][] removeColumn(BoxType[][] original, int colToRemove) {
-        if (original == null || original.length == 0) {
-            return original;
-        }
-
-        int rows = original.length;
-        int oldCols = original[0].length;
-
-        if (colToRemove < 0 || colToRemove >= oldCols) {
-            return original;
-        }
-
-        BoxType[][] newArray = new BoxType[rows][oldCols - 1];
-
-        for (int i = 0; i < rows; i++) {
-            // 复制 colToRemove 之前的列
-            if (colToRemove > 0) {
-                System.arraycopy(original[i], 0, newArray[i], 0, colToRemove);
+    public void nextState() {
+        stateMode.transferStatusByEvent(CreateSokobanAction.TRANSFORM).ifPresent(new Consumer<CreateSokobanState>() {
+            @Override
+            public void accept(CreateSokobanState createSokobanState) {
+                dataLayer.setState(createSokobanState);
+                invalidate();
+                if (listener != null) {
+                    listener.onStateChange(createSokobanState);
+                }
             }
+        });
+    }
 
-            // 复制 colToRemove 之后的列
-            if (colToRemove < oldCols - 1) {
-                System.arraycopy(
-                        original[i],
-                        colToRemove + 1,
-                        newArray[i],
-                        colToRemove,
-                        oldCols - colToRemove - 1
-                );
+    public void preState() {
+        stateMode.transferStatusByEvent(CreateSokobanAction.BACK).ifPresent(new Consumer<CreateSokobanState>() {
+            @Override
+            public void accept(CreateSokobanState createSokobanState) {
+                dataLayer.setState(createSokobanState);
+                invalidate();
+                if (listener != null) {
+                    listener.onStateChange(createSokobanState);
+                }
             }
-        }
-
-        return newArray;
+        });
     }
 
-    public Level getResult() {
-//        List<Pair<Integer, Integer>> allTruePositions = targets.getAllTruePositions();
-//        List<Location> target = allTruePositions.stream().map(new Function<Pair<Integer, Integer>, Location>() {
-//            @Override
-//            public Location apply(Pair<Integer, Integer> integerIntegerPair) {
-//                return new Location(integerIntegerPair.second, integerIntegerPair.first);
-//            }
-//        }).collect(Collectors.toList());
-//        return LevelMapper.mapper(level, target);
-        return null;
+    // cellSizePx 是当前每个格子的实际像素大小（比如 80px、100px、128px）
+    public float spFromCell(float cellSizePx) {
+        // 1sp ≈ 1dp，能随系统字体大小设置放大，极度推荐
+        return cellSizePx * 0.158f;   // 黄金系数！！！
     }
 
+    public CreateSokobanLevelView setListener(CreateSokobanListener listener) {
+        this.listener = listener;
+        return this;
+    }
+
+    public CreateSokobanState currentState() {
+        return stateMode.getCurrentState();
+    }
 }
