@@ -5,9 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import funny.abbas.sokoban.MyApplication
 import funny.abbas.sokoban.database.bean.CustomLevel
-import funny.abbas.sokoban.domain.Level
+import funny.abbas.sokoban.core.Level
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch

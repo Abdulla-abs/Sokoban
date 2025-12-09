@@ -1,63 +1,61 @@
-package funny.abbas.sokoban.domain;
+package funny.abbas.sokoban.core;
 
-import java.util.List;
-
-public class Empty extends MapObject {
+public class Wall extends MapObject {
 
 
-    public Empty(Location location, MapController mapController) {
+    public Wall(Location location, MapController mapController) {
         super(location, mapController);
     }
 
     @Override
     public BoxType getBoxType() {
-        return BoxType.Empty;
+        return BoxType.Wall;
     }
 
     @Override
     public boolean canMoveLeft() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean canMoveTop() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean canMoveRight() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean canMoveBottom() {
-        return true;
+        return false;
     }
 
     @Override
     public Location moveLeft(Location origin,StepRemember stepRemember) {
-        return location;
+        throw new IllegalStateException();
     }
 
     @Override
     public Location moveUp(Location origin,StepRemember stepRemember) {
-        return location;
+        throw new IllegalStateException();
     }
 
     @Override
     public Location moveRight(Location origin,StepRemember stepRemember) {
-        return location;
+        throw new IllegalStateException();
     }
 
     @Override
     public Location moveBottom(Location origin,StepRemember stepRemember) {
-        return location;
+        throw new IllegalStateException();
     }
 
 
     @Override
     public String toString() {
-        return "Empty{" + this.getClass().getSimpleName() +
+        return "Wall{" + this.getClass().getSimpleName() +
                 "location=" + location +
                 '}';
     }

@@ -1,6 +1,8 @@
-package funny.abbas.sokoban.domain;
+package funny.abbas.sokoban.core;
 
 import java.util.Optional;
+
+import funny.abbas.sokoban.view.Direction;
 
 public abstract class MapObject implements MapObjectAble {
 
@@ -11,6 +13,7 @@ public abstract class MapObject implements MapObjectAble {
     public float renderX;
     public float renderY;
 
+    protected Direction direction = Direction.BOTTOM;
 
     public MapObject(Location location, MapController mapController) {
         this.location = location;
@@ -47,5 +50,9 @@ public abstract class MapObject implements MapObjectAble {
     public MapObject setLocation(Location location) {
         this.location = location;
         return this;
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 }

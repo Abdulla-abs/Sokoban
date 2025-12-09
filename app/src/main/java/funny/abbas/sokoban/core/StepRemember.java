@@ -1,4 +1,4 @@
-package funny.abbas.sokoban.domain;
+package funny.abbas.sokoban.core;
 
 import android.util.Pair;
 

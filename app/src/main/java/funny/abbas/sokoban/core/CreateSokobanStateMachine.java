@@ -1,4 +1,4 @@
-package funny.abbas.sokoban.domain;
+package funny.abbas.sokoban.core;
 
 import funny.abbas.sokoban.state.StateMachine;
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanAction;

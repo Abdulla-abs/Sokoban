@@ -1,8 +1,6 @@
-package funny.abbas.sokoban.domain;
+package funny.abbas.sokoban.core;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 

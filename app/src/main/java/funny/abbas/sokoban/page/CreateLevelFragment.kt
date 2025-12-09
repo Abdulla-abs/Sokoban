@@ -11,12 +11,11 @@ import funny.abbas.sokoban.MyApplication
 import funny.abbas.sokoban.R
 import funny.abbas.sokoban.database.bean.CustomLevel
 import funny.abbas.sokoban.databinding.FragmentCreateLevelBinding
-import funny.abbas.sokoban.domain.CreateSokobanStateMachine
+import funny.abbas.sokoban.core.CreateSokobanStateMachine
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanAction
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanState
 import funny.abbas.sokoban.util.Result
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.Date
 

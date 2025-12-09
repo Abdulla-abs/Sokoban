@@ -4,9 +4,9 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import funny.abbas.sokoban.domain.Level
-import funny.abbas.sokoban.domain.LevelMapper
-import funny.abbas.sokoban.domain.LevelVo
+import funny.abbas.sokoban.core.Level
+import funny.abbas.sokoban.core.LevelMapper
+import funny.abbas.sokoban.core.LevelVo
 
 class MainViewModel : ViewModel() {
     val allLevel: MutableLiveData<MutableList<LevelVo>?> = MutableLiveData<MutableList<LevelVo>?>(

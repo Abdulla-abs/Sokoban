@@ -11,13 +11,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import funny.abbas.sokoban.MyApplication
 import funny.abbas.sokoban.R
 import funny.abbas.sokoban.databinding.FragmentCustomGameBinding
-import funny.abbas.sokoban.domain.Level
 import funny.abbas.sokoban.page.vm.CustomGameViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match

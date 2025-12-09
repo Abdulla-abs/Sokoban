@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import funny.abbas.sokoban.domain.BoxType;
-import funny.abbas.sokoban.domain.CreateSokobanDataLayer;
-import funny.abbas.sokoban.domain.CreateSokobanMode;
-import funny.abbas.sokoban.domain.Level;
-import funny.abbas.sokoban.domain.LevelMapper;
-import funny.abbas.sokoban.domain.Location;
-import funny.abbas.sokoban.domain.Skin;
+import funny.abbas.sokoban.core.BoxType;
+import funny.abbas.sokoban.core.CreateSokobanDataLayer;
+import funny.abbas.sokoban.core.CreateSokobanMode;
+import funny.abbas.sokoban.core.Level;
+import funny.abbas.sokoban.core.LevelMapper;
+import funny.abbas.sokoban.core.Location;
+import funny.abbas.sokoban.core.Skin;
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanAction;
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanState;
 import funny.abbas.sokoban.util.Result;
@@ -107,21 +107,21 @@ public class CreateSokobanLevelView extends View {
 
         for (int i = 0; i < gridRows; i++) {
             for (int j = 0; j < gridCols; j++) {
-                Bitmap bitmap = skin.loadSkin(dataLayer.getBasicMap().get(i, j), measuredBoxSize, measuredBoxSize);
+                Bitmap bitmap = skin.loadSkin(dataLayer.getBasicMap().get(i, j),Direction.BOTTOM, measuredBoxSize, measuredBoxSize);
                 canvas.drawBitmap(bitmap, j * measuredBoxSize, i * measuredBoxSize,
                         null);
             }
         }
 
         for (Location target : dataLayer.getTargets()) {
-            Bitmap bitmap = skin.loadSkin(BoxType.Target, measuredBoxSize, measuredBoxSize);
+            Bitmap bitmap = skin.loadSkin(BoxType.Target,Direction.BOTTOM, measuredBoxSize, measuredBoxSize);
             canvas.drawBitmap(bitmap, target.getX() * measuredBoxSize,
                     target.getY() * measuredBoxSize,
                     null);
         }
 
         for (Location box : dataLayer.getBoxes()) {
-            Bitmap bitmap = skin.loadSkin(BoxType.Box, measuredBoxSize, measuredBoxSize);
+            Bitmap bitmap = skin.loadSkin(BoxType.Box,Direction.BOTTOM, measuredBoxSize, measuredBoxSize);
             canvas.drawBitmap(bitmap, box.getX() * measuredBoxSize,
                     box.getY() * measuredBoxSize,
                     null);
@@ -130,7 +130,7 @@ public class CreateSokobanLevelView extends View {
         dataLayer.getRole().ifPresent(new Consumer<Location>() {
             @Override
             public void accept(Location location) {
-                Bitmap bitmap = skin.loadSkin(BoxType.Role, measuredBoxSize, measuredBoxSize);
+                Bitmap bitmap = skin.loadSkin(BoxType.Role,Direction.BOTTOM, measuredBoxSize, measuredBoxSize);
                 canvas.drawBitmap(bitmap, location.getX() * measuredBoxSize,
                         location.getY() * measuredBoxSize,
                         null);
@@ -161,7 +161,7 @@ public class CreateSokobanLevelView extends View {
         float bottomBarY = gridRows * measuredBoxSize + defaultBottomBarMargin;
         for (int i = 0; i < stateBoxType.size(); i++) {
             BoxType value = stateBoxType.get(i);
-            Bitmap bitmap = skin.loadSkin(value, measuredBoxSize, measuredBoxSize);
+            Bitmap bitmap = skin.loadSkin(value,Direction.BOTTOM, measuredBoxSize, measuredBoxSize);
             canvas.drawBitmap(bitmap, i * measuredBoxSize + margin,
                     bottomBarY,
                     null);
@@ -171,7 +171,7 @@ public class CreateSokobanLevelView extends View {
 
         // --- 绘制拖动阴影 ---
         if (draggedBoxType != null && currentDragX != -1f) {
-            Bitmap bitmap = skin.loadSkin(draggedBoxType, measuredBoxSize, measuredBoxSize);
+            Bitmap bitmap = skin.loadSkin(draggedBoxType,Direction.BOTTOM, measuredBoxSize, measuredBoxSize);
             //绘制预放置格子
             if (dropCol >= 0 && dropCol < gridCols && dropRow >= 0 && dropRow < gridRows) {
                 canvas.drawBitmap(bitmap, dropCol * measuredBoxSize, dropRow * measuredBoxSize,

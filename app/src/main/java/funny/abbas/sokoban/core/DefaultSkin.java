@@ -1,11 +1,11 @@
-package funny.abbas.sokoban.domain;
+package funny.abbas.sokoban.core;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import java.util.HashMap;
+import funny.abbas.sokoban.view.Direction;
 
 public class DefaultSkin extends CacheThemeAbs implements Theme {
 
@@ -19,7 +19,7 @@ public class DefaultSkin extends CacheThemeAbs implements Theme {
     }
 
     @Override
-    protected Bitmap getRoleBitmap(float width, float height) {
+    protected Bitmap getRoleBitmap(Direction direction,float width, float height) {
         Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         paint.setColor(Color.CYAN);
@@ -28,7 +28,7 @@ public class DefaultSkin extends CacheThemeAbs implements Theme {
     }
 
     @Override
-    protected Bitmap getBoxBitmap(float width, float height) {
+    protected Bitmap getBoxBitmap(Direction direction,float width, float height) {
         Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         paint.setColor(Color.GREEN);
@@ -37,7 +37,7 @@ public class DefaultSkin extends CacheThemeAbs implements Theme {
     }
 
     @Override
-    protected Bitmap getWallBitmap(float width, float height) {
+    protected Bitmap getWallBitmap(Direction direction,float width, float height) {
         Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         paint.setColor(Color.BLACK);
@@ -46,7 +46,7 @@ public class DefaultSkin extends CacheThemeAbs implements Theme {
     }
 
     @Override
-    protected Bitmap getEmptyBitmap(float width, float height) {
+    protected Bitmap getEmptyBitmap(Direction direction,float width, float height) {
         Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         paint.setColor(Color.WHITE);
@@ -55,7 +55,7 @@ public class DefaultSkin extends CacheThemeAbs implements Theme {
     }
 
     @Override
-    protected Bitmap getTargetBitmap(float width, float height) {
+    protected Bitmap getTargetBitmap(Direction direction,float width, float height) {
         Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.TRANSPARENT);

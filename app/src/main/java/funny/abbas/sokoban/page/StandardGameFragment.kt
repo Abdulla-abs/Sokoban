@@ -9,15 +9,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import funny.abbas.sokoban.MainActivity
 import funny.abbas.sokoban.R
 import funny.abbas.sokoban.databinding.FragmentStandardGameBinding
-import funny.abbas.sokoban.domain.StandardLevelBoard
 import funny.abbas.sokoban.page.vm.MainViewModel
-import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

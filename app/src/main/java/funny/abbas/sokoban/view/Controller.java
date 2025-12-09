@@ -2,14 +2,10 @@ package funny.abbas.sokoban.view;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import funny.abbas.sokoban.domain.Level;
-import funny.abbas.sokoban.domain.Location;
-import funny.abbas.sokoban.domain.MapObject;
-import funny.abbas.sokoban.domain.Target;
+import funny.abbas.sokoban.core.Level;
+import funny.abbas.sokoban.core.Location;
+import funny.abbas.sokoban.core.MapObject;
 
 public class Controller implements Action {
     protected Level level;

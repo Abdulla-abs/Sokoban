@@ -1,7 +1,6 @@
-package funny.abbas.sokoban.domain;
+package funny.abbas.sokoban.core;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
 
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanState;

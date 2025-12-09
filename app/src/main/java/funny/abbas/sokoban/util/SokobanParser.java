@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import funny.abbas.sokoban.domain.LevelVo;
-import funny.abbas.sokoban.domain.Location;
+import funny.abbas.sokoban.core.LevelVo;
+import funny.abbas.sokoban.core.Location;
 
 /**
  * Parser for Sokoban .levels files (e.g., YASS format).

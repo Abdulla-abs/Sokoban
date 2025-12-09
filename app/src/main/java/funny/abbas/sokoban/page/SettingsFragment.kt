@@ -6,9 +6,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import funny.abbas.sokoban.R
-import funny.abbas.sokoban.domain.ClassicTheme1
-import funny.abbas.sokoban.domain.DefaultSkin
-import funny.abbas.sokoban.domain.Skin
+import funny.abbas.sokoban.core.Skin
 
 class SettingsFragment : PreferenceFragmentCompat() {
 

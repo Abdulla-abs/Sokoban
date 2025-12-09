@@ -1,16 +1,15 @@
-package funny.abbas.sokoban.domain;
+package funny.abbas.sokoban.core;
 
-import java.util.List;
+public class Empty extends MapObject {
 
-public class Target extends MapObject{
 
-    public Target(Location location, MapController mapController) {
+    public Empty(Location location, MapController mapController) {
         super(location, mapController);
     }
 
     @Override
     public BoxType getBoxType() {
-        return BoxType.Target;
+        return BoxType.Empty;
     }
 
     @Override
@@ -53,4 +52,11 @@ public class Target extends MapObject{
         return location;
     }
 
+
+    @Override
+    public String toString() {
+        return "Empty{" + this.getClass().getSimpleName() +
+                "location=" + location +
+                '}';
+    }
 }

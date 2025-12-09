@@ -1,8 +1,9 @@
-package funny.abbas.sokoban.domain;
+package funny.abbas.sokoban.core;
 
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import funny.abbas.sokoban.view.Direction;
 
 public class Role extends MapObject {
 
@@ -43,14 +44,12 @@ public class Role extends MapObject {
 
     @Override
     public Location moveLeft(Location origin,StepRemember stepRemember) {
+        direction = Direction.LEFT;
         stepRemember.pushStart();
-        getLeftObj().ifPresent(new Consumer<MapObject>() {
-            @Override
-            public void accept(MapObject mapObject) {
-                stepRemember.push(Role.this,location);
-                location = mapObject.moveLeft(location,stepRemember);
+        getLeftObj().ifPresent(mapObject -> {
+            stepRemember.push(Role.this, location);
+            location = mapObject.moveLeft(location, stepRemember);
 
-            }
         });
         stepRemember.pushEnd();
         return location;
@@ -58,6 +57,7 @@ public class Role extends MapObject {
 
     @Override
     public Location moveUp(Location origin,StepRemember stepRemember) {
+        direction = Direction.TOP;
         stepRemember.pushStart();
         getTopObj().ifPresent(new Consumer<MapObject>() {
             @Override
@@ -73,6 +73,7 @@ public class Role extends MapObject {
 
     @Override
     public Location moveRight(Location origin,StepRemember stepRemember) {
+        direction = Direction.RIGHT;
         stepRemember.pushStart();
         getRightObj().ifPresent(new Consumer<MapObject>() {
             @Override
@@ -88,6 +89,7 @@ public class Role extends MapObject {
 
     @Override
     public Location moveBottom(Location origin,StepRemember stepRemember) {
+        direction = Direction.BOTTOM;
         stepRemember.pushStart();
         getBottomObj().ifPresent(new Consumer<MapObject>() {
             @Override
