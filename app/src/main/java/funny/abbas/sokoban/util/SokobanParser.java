@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import funny.abbas.sokoban.domain.Level;
-import funny.abbas.sokoban.domain.LevelMapper;
+import funny.abbas.sokoban.domain.LevelVo;
 import funny.abbas.sokoban.domain.Location;
 
 /**
@@ -22,10 +21,10 @@ public class SokobanParser {
      * @param fileContent Full string content of the .levels file.
      * @return Immutable list of parsed levels (in order, typically 88 levels).
      */
-    public static List<Level> parseLevels(String fileContent) {
+    public static List<LevelVo> parseLevels(String fileContent) {
         List<String> lines = Arrays.asList(fileContent.split("\n"));
         int i = 0;
-        List<Level> levels = new ArrayList<>();
+        List<LevelVo> levels = new ArrayList<>();
         while (i < lines.size()) {
             String line = lines.get(i).trim();
             if (line.startsWith(";LEVEL ")) {
@@ -94,7 +93,7 @@ public class SokobanParser {
                 }
 
 
-                levels.add(LevelMapper.mapper(baseMap,playerLoc,boxesList,goalsList));
+                levels.add(new LevelVo(baseMap,playerLoc,boxesList,goalsList));
             } else {
                 i++;
             }

@@ -1,63 +1,71 @@
-package funny.abbas.sokoban.page.vm;
+package funny.abbas.sokoban.page.vm
 
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import funny.abbas.sokoban.domain.Level
+import funny.abbas.sokoban.domain.LevelMapper
+import funny.abbas.sokoban.domain.LevelVo
 
-import java.util.Collections;
-import java.util.List;
+class MainViewModel : ViewModel() {
+    val allLevel: MutableLiveData<MutableList<LevelVo>?> = MutableLiveData<MutableList<LevelVo>?>(
+        mutableListOf<LevelVo>()
+    )
+    val levelIndex: MutableLiveData<Int> = MutableLiveData<Int>(0)
+    val currentLevel: MediatorLiveData<Level?> = MediatorLiveData<Level?>()
 
-import funny.abbas.sokoban.domain.Level;
-
-public class MainViewModel extends ViewModel {
-
-    public final MutableLiveData<List<Level>> allLevel = new MutableLiveData<>(Collections.emptyList());
-    public final MutableLiveData<Integer> levelIndex = new MutableLiveData<>(0);
-    public final MediatorLiveData<Level> currentLevel = new MediatorLiveData<>();
-
-    public MainViewModel() {
-        currentLevel.addSource(allLevel, new Observer<List<Level>>() {
-            @Override
-            public void onChanged(List<Level> levels) {
-                onLevelIndexCombine(levels,levelIndex.getValue());
+    init {
+        currentLevel.addSource<MutableList<LevelVo>?>(
+            allLevel,
+            object : Observer<MutableList<LevelVo>?> {
+                override fun onChanged(levels: MutableList<LevelVo>?) {
+                    onLevelIndexCombine(levels, levelIndex.getValue())
+                }
+            })
+        currentLevel.addSource<Int?>(levelIndex, object : Observer<Int> {
+            override fun onChanged(integer: Int) {
+                onLevelIndexCombine(allLevel.getValue(), integer)
             }
-        });
-        currentLevel.addSource(levelIndex, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                onLevelIndexCombine(allLevel.getValue(),integer);
-            }
-        });
+        })
     }
 
-    private void onLevelIndexCombine(List<Level> list, Integer index){
-        if (list == null) return;
-        if (list.isEmpty()) return;
+    private fun onLevelIndexCombine(list: MutableList<LevelVo>?, index: Int?) {
+        if (list == null) return
+        if (list.isEmpty()) return
         try {
-            Level level = list.get(index);
-            currentLevel.postValue(level);
-        } catch (Exception e) {
+            index?.let {
+                val levelVo = list[it]
+                currentLevel.postValue(LevelMapper.mapper(levelVo))
+            }
+        } catch (e: Exception) {
             //wtf
         }
     }
 
 
-    public void nextLevel() {
-        Integer value = levelIndex.getValue();
-        if (value != null){
-            levelIndex.setValue(++value);
-        }else {
-            levelIndex.setValue(0);
+    fun nextLevel() {
+        var value = levelIndex.getValue()
+        if (value != null) {
+            levelIndex.setValue(++value)
+        } else {
+            levelIndex.setValue(0)
         }
     }
 
-    public void preLevel() {
-        Integer value = levelIndex.getValue();
-        if (value != null && value > 0){
-            levelIndex.setValue(--value);
-        }else {
-            levelIndex.setValue(0);
+    fun preLevel() {
+        var value = levelIndex.getValue()
+        if (value != null && value > 0) {
+            levelIndex.setValue(--value)
+        } else {
+            levelIndex.setValue(0)
         }
+    }
+
+    fun reloadLevel() {
+        onLevelIndexCombine(
+            allLevel.value,
+            levelIndex.value
+        )
     }
 }

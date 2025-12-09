@@ -39,4 +39,8 @@ public class LevelMapper {
         }
         return mapper(map, playerLoc, boxesList, goalsList);
     }
+
+    public static Level mapper(LevelVo levelVo) {
+        return mapper(levelVo.map, levelVo.role, levelVo.boxes, levelVo.targets);
+    }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".page.StandardGameFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -44,60 +44,114 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
 
-    <Button
-        android:id="@+id/bt_move_left"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="左移"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/h5p"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <Button
-        android:id="@+id/bt_move_up"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pre_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="上一关"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/next_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下一关"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="刷新" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/back_step"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="悔步" />
+
+    </LinearLayout>
+
+
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="上移"
-        app:layout_constraintBottom_toBottomOf="@id/controller_line"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
-
-    <Button
-        android:id="@+id/bt_move_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="右移"
+        android:layout_margin="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/h5p"
-        app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/bt_move_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="下移"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/controller_line" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/pre_level"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="上一关"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bt_move_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="左"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/h5p"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
 
-    <Button
-        android:id="@+id/next_level"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="下一关"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
+            <Space
+                android:layout_width="36dp"
+                android:layout_height="0dp" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bt_move_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="右"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/h5p"
+                app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bt_move_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上"
+                app:layout_constraintBottom_toBottomOf="@id/controller_line"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/game_view_board_line" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="36dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bt_move_bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="下"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/controller_line" />
+
+
+        </LinearLayout>
+
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

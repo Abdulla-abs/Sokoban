@@ -95,6 +95,16 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        viewModel.allLevel.observe(this) { dataList ->
+            if (dataList == null || dataList.isEmpty()){
+                loadLevel()
+            }
+        }
+
+
+    }
+
+    private fun loadLevel(){
         lifecycleScope.launch {
             withContext(Dispatchers.IO){
                 try {
@@ -111,7 +121,6 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
 
 
     override fun onBackPressed() {

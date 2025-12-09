@@ -89,6 +89,9 @@ class StandardGameFragment : Fragment() {
         binding.btMoveBottom.setOnClickListener {
             sokobanView.moveBottom()
         }
+        binding.refresh.setOnClickListener {
+            mainViewModel.reloadLevel()
+        }
 
 
         (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
@@ -98,7 +101,10 @@ class StandardGameFragment : Fragment() {
         mainViewModel.currentLevel.observe(viewLifecycleOwner) { level ->
             sokobanView.setLevel(level)
             (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
-                title = "经典关卡：第${mainViewModel.levelIndex.value}关"
+                title = "经典关卡"
+                mainViewModel.levelIndex.value?.let {
+                    subtitle = "第${it+1}关"
+                }
             }
         }
     }
