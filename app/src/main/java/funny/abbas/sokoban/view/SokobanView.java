@@ -1,16 +1,23 @@
 package funny.abbas.sokoban.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+
 import funny.abbas.sokoban.domain.BoxType;
 import funny.abbas.sokoban.domain.Level;
+import funny.abbas.sokoban.domain.Location;
 import funny.abbas.sokoban.domain.MapObject;
 import funny.abbas.sokoban.domain.Skin;
 import funny.abbas.sokoban.domain.Theme;
@@ -22,9 +29,8 @@ public class SokobanView extends View implements Action {
     private float paddingStart = 0f;
 
     private final Skin skin = Skin.getInstance();
-
-
     private final Controller controller = new Controller();
+    private volatile boolean inAnimation = false;
 
     public SokobanView(Context context) {
         super(context);
@@ -73,17 +79,30 @@ public class SokobanView extends View implements Action {
                     null);
         }
 
+
         for (MapObject box : controller.level.boxes) {
             Bitmap bitmap = skin.loadSkin(BoxType.Box, measuredBoxSize, measuredBoxSize);
-            canvas.drawBitmap(bitmap, paddingStart + box.getLocation().getX() * measuredBoxSize,
-                    paddingTop + box.getLocation().getY() * measuredBoxSize,
-                    null);
+            if (box.inAnimation) {
+                canvas.drawBitmap(bitmap, paddingStart + box.renderX,
+                        paddingTop + box.renderY,
+                        null);
+            } else {
+                canvas.drawBitmap(bitmap, paddingStart + box.getLocation().getX() * measuredBoxSize,
+                        paddingTop + box.getLocation().getY() * measuredBoxSize,
+                        null);
+            }
+
         }
 
         MapObject role = controller.level.getRole();
         Bitmap bitmap = skin.loadSkin(BoxType.Role, measuredBoxSize, measuredBoxSize);
-        canvas.drawBitmap(bitmap, paddingStart + role.getLocation().getX() * measuredBoxSize,
-                paddingTop + role.getLocation().getY() * measuredBoxSize, null);
+        if (role.inAnimation) {
+            canvas.drawBitmap(bitmap, paddingStart + role.renderX,
+                    paddingTop + role.renderY, null);
+        } else {
+            canvas.drawBitmap(bitmap, paddingStart + role.getLocation().getX() * measuredBoxSize,
+                    paddingTop + role.getLocation().getY() * measuredBoxSize, null);
+        }
     }
 
     @Override
@@ -136,8 +155,8 @@ public class SokobanView extends View implements Action {
 
     @Override
     public boolean moveLeft() {
-        if (controller.moveLeft()) {
-            invalidate();
+        if (!inAnimation && controller.moveLeft()) {
+            startAnimation(Direction.LEFT);
             return true;
         }
         return false;
@@ -145,8 +164,8 @@ public class SokobanView extends View implements Action {
 
     @Override
     public boolean moveTop() {
-        if (controller.moveTop()) {
-            invalidate();
+        if (!inAnimation && controller.moveTop()) {
+            startAnimation(Direction.TOP);
             return true;
         }
         return false;
@@ -154,8 +173,8 @@ public class SokobanView extends View implements Action {
 
     @Override
     public boolean moveRight() {
-        if (controller.moveRight()) {
-            invalidate();
+        if (!inAnimation && controller.moveRight()) {
+            startAnimation(Direction.RIGHT);
             return true;
         }
         return false;
@@ -163,8 +182,8 @@ public class SokobanView extends View implements Action {
 
     @Override
     public boolean moveBottom() {
-        if (controller.moveBottom()) {
-            invalidate();
+        if (!inAnimation && controller.moveBottom()) {
+            startAnimation(Direction.BOTTOM);
             return true;
         }
         return false;
@@ -172,10 +191,73 @@ public class SokobanView extends View implements Action {
 
     @Override
     public boolean backStep() {
-        if (controller.backStep()) {
+        if (!inAnimation && controller.backStep()) {
             invalidate();
             return true;
         }
         return false;
+    }
+
+    private void startAnimation(final Direction direction){
+        inAnimation = true;
+
+        List<Pair<MapObject, Location>> currentStep = controller.level.stepRemember.getCurrentStep();
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0f, 1f);
+        valueAnimator.setDuration(150);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(@NonNull ValueAnimator valueAnimator) {
+                float progress = (float) valueAnimator.getAnimatedValue();
+                for (Pair<MapObject, Location> mapObjectLocationPair : currentStep) {
+                    render(direction,mapObjectLocationPair,progress);
+                }
+                invalidate();
+            }
+        });
+        valueAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                for (Pair<MapObject, Location> mapObjectLocationPair : currentStep) {
+                    mapObjectLocationPair.first.inAnimation = true;
+                }
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                for (Pair<MapObject, Location> mapObjectLocationPair : currentStep) {
+                    mapObjectLocationPair.first.inAnimation = false;
+                }
+                inAnimation = false;
+                invalidate();
+            }
+        });
+        valueAnimator.start();
+    }
+
+    private void render(Direction direction,Pair<MapObject, Location> mapObjectLocationPair,float animationProgress){
+        switch (direction){
+            case LEFT:
+                float leftStartX = mapObjectLocationPair.second.getX() * measuredBoxSize;
+                mapObjectLocationPair.first.renderX = leftStartX - measuredBoxSize * animationProgress;
+                mapObjectLocationPair.first.renderY = mapObjectLocationPair.second.getY() * measuredBoxSize;
+                break;
+            case TOP:
+                float topStartY = mapObjectLocationPair.second.getY() * measuredBoxSize;
+                mapObjectLocationPair.first.renderX = mapObjectLocationPair.second.getX() * measuredBoxSize;
+                mapObjectLocationPair.first.renderY = topStartY - measuredBoxSize * animationProgress;
+                break;
+            case RIGHT:
+                float rightStartX = mapObjectLocationPair.second.getX() * measuredBoxSize;
+                mapObjectLocationPair.first.renderX = rightStartX + measuredBoxSize * animationProgress;
+                mapObjectLocationPair.first.renderY = mapObjectLocationPair.second.getY() * measuredBoxSize;
+                break;
+            case BOTTOM:
+                float bottomStartY = mapObjectLocationPair.second.getY() * measuredBoxSize;
+                mapObjectLocationPair.first.renderX = mapObjectLocationPair.second.getX() * measuredBoxSize;
+                mapObjectLocationPair.first.renderY = bottomStartY + measuredBoxSize * animationProgress;
+                break;
+        }
     }
 }

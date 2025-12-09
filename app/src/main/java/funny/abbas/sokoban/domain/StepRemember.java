@@ -5,7 +5,6 @@ import android.util.Pair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class StepRemember {
 
@@ -55,5 +54,9 @@ public class StepRemember {
         }
 
         return true;
+    }
+
+    public List<Pair<MapObject, Location>> getCurrentStep() {
+        return remember.get(step-1);
     }
 }

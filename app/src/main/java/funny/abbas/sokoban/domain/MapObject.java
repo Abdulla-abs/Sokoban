@@ -7,6 +7,11 @@ public abstract class MapObject implements MapObjectAble {
     protected Location location;
     protected MapController mapController;
 
+    public volatile boolean inAnimation = false;
+    public float renderX;
+    public float renderY;
+
+
     public MapObject(Location location, MapController mapController) {
         this.location = location;
         this.mapController = mapController;
