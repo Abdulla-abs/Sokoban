@@ -96,7 +96,7 @@ class CustomGameFragment : Fragment() {
             viewmodel.levelFlow.collect { levelResult ->
                 if (levelResult.isSuccess) {
                     (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
-                        title = "自定义关卡：第${viewmodel.currentIndex}关"
+                        subtitle = "第${viewmodel.currentIndex+1}关"
                     }
                     binding.sokoban.setLevel(levelResult.getOrNull())
                 }

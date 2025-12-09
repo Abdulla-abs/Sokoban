@@ -107,7 +107,7 @@ class CreateLevelFragment : Fragment() {
         val canBePreStateOp =
             CreateSokobanStateMachine.getTargetStatus(newState, CreateSokobanAction.BACK)
         (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
-            title = "创作关卡：${newState.desc}"
+            subtitle = "${newState.desc}"
         }
         binding.previousState.isEnabled = canBePreStateOp != null
         binding.nextState.isEnabled = canBeNextStateOp != null

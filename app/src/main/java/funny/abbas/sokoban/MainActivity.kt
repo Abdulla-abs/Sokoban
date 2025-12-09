@@ -76,22 +76,35 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.standard_level -> { /* 切换到首页 */
                     navController.navigate(R.id.standardGameFragment)
+                    binding.toolbar.apply {
+                        title = "经典关卡"
+                    }
                 }
 
                 R.id.custom_level -> { /* 打开设置 */
                     navController.navigate(R.id.customGameFragment)
+                    binding.toolbar.apply {
+                        title = "自定义关卡"
+                    }
                 }
 
                 R.id.create_level -> { /* 退出登录 */
                     navController.navigate(R.id.createLevelFragment)
+                    binding.toolbar.apply {
+                        title = "创作关卡"
+                    }
                 }
 
                 R.id.setting -> {
                     navController.navigate(R.id.settingsFragment)
+                    binding.toolbar.apply {
+                        title = "设置"
+                    }
                 }
             }
             // 点击后自动关掉侧滑菜单（推荐）
             binding.drawerLayout.closeDrawer(GravityCompat.START)
+            binding.toolbar.subtitle = null
             true
         }
 

@@ -96,11 +96,6 @@ class StandardGameFragment : Fragment() {
             binding.sokoban.backStep()
         }
 
-
-        (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
-            title = "经典关卡"
-        }
-
         mainViewModel.currentLevel.observe(viewLifecycleOwner) { level ->
             sokobanView.setLevel(level)
             (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {

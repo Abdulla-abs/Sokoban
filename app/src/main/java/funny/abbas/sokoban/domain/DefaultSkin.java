@@ -7,9 +7,8 @@ import android.graphics.Paint;
 
 import java.util.HashMap;
 
-public class DefaultSkin implements Theme {
+public class DefaultSkin extends CacheThemeAbs implements Theme {
 
-    private final HashMap<BoxType, Bitmap> boxBitmapCache = new HashMap<>();
     private final Paint paint = new Paint();
     private final Paint targetPaint = new Paint();
 
@@ -20,78 +19,48 @@ public class DefaultSkin implements Theme {
     }
 
     @Override
-    public Bitmap getRole(float width, float height) {
-        Bitmap cacheBitmap = boxBitmapCache.get(BoxType.Role);
-        if (cacheBitmap == null) {
-            Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            paint.setColor(Color.CYAN);
-            canvas.drawRect(0, 0, width, height, paint);
-            boxBitmapCache.put(BoxType.Role, bitmap);
-        }
-
-        return boxBitmapCache.get(BoxType.Role);
+    protected Bitmap getRoleBitmap(float width, float height) {
+        Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        paint.setColor(Color.CYAN);
+        canvas.drawRect(0, 0, width, height, paint);
+        return bitmap;
     }
 
     @Override
-    public Bitmap getBox(float width, float height) {
-        Bitmap cacheBitmap = boxBitmapCache.get(BoxType.Box);
-        if (cacheBitmap == null) {
-            Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            paint.setColor(Color.GREEN);
-            canvas.drawRect(0, 0, width, height, paint);
-            boxBitmapCache.put(BoxType.Box, bitmap);
-        }
-
-        return boxBitmapCache.get(BoxType.Box);
+    protected Bitmap getBoxBitmap(float width, float height) {
+        Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        paint.setColor(Color.GREEN);
+        canvas.drawRect(0, 0, width, height, paint);
+        return bitmap;
     }
 
     @Override
-    public Bitmap getWall(float width, float height) {
-        Bitmap cacheBitmap = boxBitmapCache.get(BoxType.Wall);
-        if (cacheBitmap == null) {
-            Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            paint.setColor(Color.BLACK);
-            canvas.drawRect(0, 0, width, height, paint);
-            boxBitmapCache.put(BoxType.Wall, bitmap);
-        }
-
-        return boxBitmapCache.get(BoxType.Wall);
+    protected Bitmap getWallBitmap(float width, float height) {
+        Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        paint.setColor(Color.BLACK);
+        canvas.drawRect(0, 0, width, height, paint);
+        return bitmap;
     }
 
     @Override
-    public Bitmap getEmpty(float width, float height) {
-        Bitmap cacheBitmap = boxBitmapCache.get(BoxType.Empty);
-        if (cacheBitmap == null) {
-            Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            paint.setColor(Color.WHITE);
-            canvas.drawRect(0, 0, width, height, paint);
-            boxBitmapCache.put(BoxType.Empty, bitmap);
-        }
-
-        return boxBitmapCache.get(BoxType.Empty);
+    protected Bitmap getEmptyBitmap(float width, float height) {
+        Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        paint.setColor(Color.WHITE);
+        canvas.drawRect(0, 0, width, height, paint);
+        return bitmap;
     }
 
     @Override
-    public Bitmap getTarget(float width, float height) {
-        Bitmap cacheBitmap = boxBitmapCache.get(BoxType.Target);
-        if (cacheBitmap == null) {
-            Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            canvas.drawColor(Color.TRANSPARENT);
-            targetPaint.setStrokeWidth(width * 0.1f);
-            canvas.drawCircle(width / 2, height / 2, (width - width * 0.2f) / 2, targetPaint);
-            boxBitmapCache.put(BoxType.Target, bitmap);
-        }
-
-        return boxBitmapCache.get(BoxType.Target);
-    }
-
-    @Override
-    public void recycleBitmaps() {
-        boxBitmapCache.clear();
+    protected Bitmap getTargetBitmap(float width, float height) {
+        Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.TRANSPARENT);
+        targetPaint.setStrokeWidth(width * 0.1f);
+        canvas.drawCircle(width / 2, height / 2, (width - width * 0.2f) / 2, targetPaint);
+        return bitmap;
     }
 }

@@ -18,6 +18,8 @@ import funny.abbas.sokoban.domain.Theme;
 public class SokobanView extends View implements Action {
 
     private float measuredBoxSize = 80f;
+    private float paddingTop = 0f;
+    private float paddingStart = 0f;
 
     private final Skin skin = Skin.getInstance();
 
@@ -36,6 +38,10 @@ public class SokobanView extends View implements Action {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (controller.level == null) return;
+
+        //measure不强制改变自身的大小；
+        //自身将判断宽高更少的一边而进行最大化显示格子
+        //由于是更具最小的边计算大小，所以较大的边将额外计算居中距离，也就是paddingStart和paddingTop
         int boxColumnCount = controller.level.map.length;
         int boxRowCount = controller.level.map[0].length;
 
@@ -44,11 +50,13 @@ public class SokobanView extends View implements Action {
 
         if (widthSize < heightSize) {
             measuredBoxSize = (float) widthSize / boxRowCount;
+            paddingTop = (heightSize - measuredBoxSize * boxColumnCount) / 2;
         } else {
             measuredBoxSize = (float) heightSize / boxColumnCount;
+            paddingStart = (widthSize - measuredBoxSize * boxRowCount) / 2;
         }
 
-        setMeasuredDimension((int) (measuredBoxSize * boxRowCount), (int) (measuredBoxSize * boxColumnCount));
+        //setMeasuredDimension((int) (measuredBoxSize * boxRowCount), (int) (measuredBoxSize * boxColumnCount));
     }
 
     @Override
@@ -60,22 +68,22 @@ public class SokobanView extends View implements Action {
 
         for (MapObject target : controller.level.getTargets()) {
             Bitmap bitmap = skin.loadSkin(BoxType.Target, measuredBoxSize, measuredBoxSize);
-            canvas.drawBitmap(bitmap, target.getLocation().getX() * measuredBoxSize,
-                    target.getLocation().getY() * measuredBoxSize,
+            canvas.drawBitmap(bitmap, paddingStart + target.getLocation().getX() * measuredBoxSize,
+                    paddingTop + target.getLocation().getY() * measuredBoxSize,
                     null);
         }
 
         for (MapObject box : controller.level.boxes) {
             Bitmap bitmap = skin.loadSkin(BoxType.Box, measuredBoxSize, measuredBoxSize);
-            canvas.drawBitmap(bitmap, box.getLocation().getX() * measuredBoxSize,
-                    box.getLocation().getY() * measuredBoxSize,
+            canvas.drawBitmap(bitmap, paddingStart + box.getLocation().getX() * measuredBoxSize,
+                    paddingTop + box.getLocation().getY() * measuredBoxSize,
                     null);
         }
 
         MapObject role = controller.level.getRole();
         Bitmap bitmap = skin.loadSkin(BoxType.Role, measuredBoxSize, measuredBoxSize);
-        canvas.drawBitmap(bitmap, role.getLocation().getX() * measuredBoxSize,
-                role.getLocation().getY() * measuredBoxSize, null);
+        canvas.drawBitmap(bitmap, paddingStart + role.getLocation().getX() * measuredBoxSize,
+                paddingTop + role.getLocation().getY() * measuredBoxSize, null);
     }
 
     @Override
@@ -102,8 +110,8 @@ public class SokobanView extends View implements Action {
                 for (int j = 0; j < controller.level.map[0].length; j++) {
                     MapObject box = controller.level.map[i][j];
                     Bitmap bitmap = skin.loadSkin(box.getBoxType(), measuredBoxSize, measuredBoxSize);
-                    canvas.drawBitmap(bitmap, box.getLocation().getX() * measuredBoxSize,
-                            box.getLocation().getY() * measuredBoxSize, null);
+                    canvas.drawBitmap(bitmap, paddingStart + box.getLocation().getX() * measuredBoxSize,
+                            paddingTop + box.getLocation().getY() * measuredBoxSize, null);
                 }
             }
             basicMapNeedInvalidate = false;
@@ -117,7 +125,7 @@ public class SokobanView extends View implements Action {
 
     public void setLevel(Level level) {
         controller.level = level;
-        basicMapNeedInvalidate=true;
+        basicMapNeedInvalidate = true;
         requestLayout();
     }
 
@@ -164,7 +172,7 @@ public class SokobanView extends View implements Action {
 
     @Override
     public boolean backStep() {
-        if (controller.backStep()){
+        if (controller.backStep()) {
             invalidate();
             return true;
         }
