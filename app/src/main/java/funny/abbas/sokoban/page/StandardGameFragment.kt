@@ -92,6 +92,9 @@ class StandardGameFragment : Fragment() {
         binding.refresh.setOnClickListener {
             mainViewModel.reloadLevel()
         }
+        binding.backStep.setOnClickListener {
+            binding.sokoban.backStep()
+        }
 
 
         (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {

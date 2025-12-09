@@ -39,4 +39,8 @@ public abstract class MapObject implements MapObjectAble {
         return location;
     }
 
+    public MapObject setLocation(Location location) {
+        this.location = location;
+        return this;
+    }
 }

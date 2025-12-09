@@ -35,22 +35,22 @@ public class Empty extends MapObject {
     }
 
     @Override
-    public Location moveLeft(Location origin) {
+    public Location moveLeft(Location origin,StepRemember stepRemember) {
         return location;
     }
 
     @Override
-    public Location moveUp(Location origin) {
+    public Location moveUp(Location origin,StepRemember stepRemember) {
         return location;
     }
 
     @Override
-    public Location moveRight(Location origin) {
+    public Location moveRight(Location origin,StepRemember stepRemember) {
         return location;
     }
 
     @Override
-    public Location moveBottom(Location origin) {
+    public Location moveBottom(Location origin,StepRemember stepRemember) {
         return location;
     }
 

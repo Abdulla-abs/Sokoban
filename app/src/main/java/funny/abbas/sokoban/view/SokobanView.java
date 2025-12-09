@@ -161,4 +161,13 @@ public class SokobanView extends View implements Action {
         }
         return false;
     }
+
+    @Override
+    public boolean backStep() {
+        if (controller.backStep()){
+            invalidate();
+            return true;
+        }
+        return false;
+    }
 }

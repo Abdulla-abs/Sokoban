@@ -79,12 +79,14 @@ public class Box extends MapObject {
     }
 
     @Override
-    public Location moveLeft(Location origin) {
+    public Location moveLeft(Location origin, StepRemember stepRemember) {
         Optional<MapObject> leftObj = getLeftObj();
         if (leftObj.isPresent()){
+            stepRemember.push(this,location);
             MapObject mapObject = leftObj.get();
             Location currentLocation = location;
-            location = mapObject.moveLeft(origin);
+            location = mapObject.moveLeft(origin,stepRemember);
+
             return currentLocation;
         }else {
             throw new IllegalStateException();
@@ -92,12 +94,14 @@ public class Box extends MapObject {
     }
 
     @Override
-    public Location moveUp(Location origin) {
+    public Location moveUp(Location origin, StepRemember stepRemember) {
         Optional<MapObject> topObj = getTopObj();
         if (topObj.isPresent()){
+            stepRemember.push(this,location);
             MapObject mapObject = topObj.get();
             Location currentLocation = location;
-            location = mapObject.moveLeft(origin);
+            location = mapObject.moveLeft(origin,stepRemember);
+
             return currentLocation;
         }else {
             throw new IllegalStateException();
@@ -105,12 +109,14 @@ public class Box extends MapObject {
     }
 
     @Override
-    public Location moveRight(Location origin) {
+    public Location moveRight(Location origin, StepRemember stepRemember) {
         Optional<MapObject> rightObj = getRightObj();
         if (rightObj.isPresent()){
+            stepRemember.push(this,location);
             MapObject mapObject = rightObj.get();
             Location currentLocation = location;
-            location = mapObject.moveLeft(origin);
+            location = mapObject.moveLeft(origin,stepRemember);
+
             return currentLocation;
         }else {
             throw new IllegalStateException();
@@ -118,12 +124,14 @@ public class Box extends MapObject {
     }
 
     @Override
-    public Location moveBottom(Location origin) {
+    public Location moveBottom(Location origin, StepRemember stepRemember) {
         Optional<MapObject> bottomObj = getBottomObj();
         if (bottomObj.isPresent()){
+            stepRemember.push(this,location);
             MapObject mapObject = bottomObj.get();
             Location currentLocation = location;
-            location = mapObject.moveLeft(origin);
+            location = mapObject.moveLeft(origin,stepRemember);
+
             return currentLocation;
         }else {
             throw new IllegalStateException();

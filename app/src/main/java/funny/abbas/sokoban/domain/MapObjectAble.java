@@ -10,12 +10,12 @@ public interface MapObjectAble {
 
     boolean canMoveBottom();
 
-    Location moveLeft(Location origin);
+    Location moveLeft(Location origin, StepRemember stepRemember);
 
-    Location moveUp(Location origin);
+    Location moveUp(Location origin, StepRemember stepRemember);
 
-    Location moveRight(Location origin);
+    Location moveRight(Location origin, StepRemember stepRemember);
 
-    Location moveBottom(Location origin);
+    Location moveBottom(Location origin, StepRemember stepRemember);
 
 }

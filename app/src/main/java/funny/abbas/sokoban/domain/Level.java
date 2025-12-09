@@ -16,11 +16,14 @@ public class Level {
     public final List<MapObject> boxes;
     private final List<MapObject> targets;
 
+    public final StepRemember stepRemember;
+
     public Level(MapObject[][] map, MapObject role, List<MapObject> boxes, List<MapObject> targets) {
         this.map = map;
         this.role = role;
         this.boxes = boxes;
         this.targets = targets;
+        stepRemember = new StepRemember(boxes,role);
     }
 
     public List<Integer> serialize() {

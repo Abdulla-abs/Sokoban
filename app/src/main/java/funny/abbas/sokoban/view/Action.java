@@ -10,4 +10,6 @@ public interface Action {
 
     boolean moveBottom();
 
+    boolean backStep();
+
 }

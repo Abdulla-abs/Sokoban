@@ -17,7 +17,7 @@ public class Controller implements Action {
 
     protected boolean onMoveLeft() {
         if (level.getRole().canMoveLeft()) {
-            level.getRole().moveLeft(null);
+            level.getRole().moveLeft(null, level.stepRemember);
             return true;
         }
         return false;
@@ -25,7 +25,7 @@ public class Controller implements Action {
 
     protected boolean onMoveTop() {
         if (level.getRole().canMoveTop()) {
-            level.getRole().moveUp(null);
+            level.getRole().moveUp(null, level.stepRemember);
             return true;
         }
         return false;
@@ -34,7 +34,7 @@ public class Controller implements Action {
 
     protected boolean onMoveRight() {
         if (level.getRole().canMoveRight()) {
-            level.getRole().moveRight(null);
+            level.getRole().moveRight(null, level.stepRemember);
             return true;
         }
         return false;
@@ -43,7 +43,7 @@ public class Controller implements Action {
 
     protected boolean onMoveBottom() {
         if (level.getRole().canMoveBottom()) {
-            level.getRole().moveBottom(null);
+            level.getRole().moveBottom(null, level.stepRemember);
             return true;
         }
         return false;
@@ -51,7 +51,7 @@ public class Controller implements Action {
 
 
     protected void onGameOver() {
-        if (stateListener != null){
+        if (stateListener != null) {
             stateListener.onSuccess();
         }
     }
@@ -90,6 +90,11 @@ public class Controller implements Action {
             onGameOver();
         }
         return move;
+    }
+
+    @Override
+    public boolean backStep() {
+        return level.stepRemember.backStep(1);
     }
 
 

@@ -42,46 +42,62 @@ public class Role extends MapObject {
     }
 
     @Override
-    public Location moveLeft(Location origin) {
+    public Location moveLeft(Location origin,StepRemember stepRemember) {
+        stepRemember.pushStart();
         getLeftObj().ifPresent(new Consumer<MapObject>() {
             @Override
             public void accept(MapObject mapObject) {
-                location = mapObject.moveLeft(location);
+                stepRemember.push(Role.this,location);
+                location = mapObject.moveLeft(location,stepRemember);
+
             }
         });
+        stepRemember.pushEnd();
         return location;
     }
 
     @Override
-    public Location moveUp(Location origin) {
+    public Location moveUp(Location origin,StepRemember stepRemember) {
+        stepRemember.pushStart();
         getTopObj().ifPresent(new Consumer<MapObject>() {
             @Override
             public void accept(MapObject mapObject) {
-                location = mapObject.moveUp(location);
+                stepRemember.push(Role.this,location);
+                location = mapObject.moveUp(location,stepRemember);
+
             }
         });
+        stepRemember.pushEnd();
         return location;
     }
 
     @Override
-    public Location moveRight(Location origin) {
+    public Location moveRight(Location origin,StepRemember stepRemember) {
+        stepRemember.pushStart();
         getRightObj().ifPresent(new Consumer<MapObject>() {
             @Override
             public void accept(MapObject mapObject) {
-                location = mapObject.moveRight(location);
+                stepRemember.push(Role.this,location);
+                location = mapObject.moveRight(location,stepRemember);
+
             }
         });
+        stepRemember.pushEnd();
         return location;
     }
 
     @Override
-    public Location moveBottom(Location origin) {
+    public Location moveBottom(Location origin,StepRemember stepRemember) {
+        stepRemember.pushStart();
         getBottomObj().ifPresent(new Consumer<MapObject>() {
             @Override
             public void accept(MapObject mapObject) {
-                location = mapObject.moveBottom(location);
+                stepRemember.push(Role.this,location);
+                location = mapObject.moveBottom(location,stepRemember);
+
             }
         });
+        stepRemember.pushEnd();
         return location;
     }
 
