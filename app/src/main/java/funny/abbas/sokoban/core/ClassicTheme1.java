@@ -113,14 +113,6 @@ public class ClassicTheme1 extends CacheThemeAbs implements Theme {
 
     @Override
     protected Bitmap getRoleBitmap(Direction direction, float width, float height) {
-//        Bitmap bitmap = Bitmap.createBitmap(skinBitmaps, 361, 248, 37, 59);
-//        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, (int) (width * 0.8), (int) (height * 0.8), true);
-//        Bitmap combainBitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
-//        Canvas combainCanvas = new Canvas(combainBitmap);
-//        combainCanvas.drawBitmap(scaledBitmap, width * 0.1f, height * 0.1f, null);
-//        bitmap.recycle();
-//        scaledBitmap.recycle();
-//        return combainBitmap;
         switch (direction) {
             case BOTTOM:
                 bottomRoleFrame = loadBottomRoleFrame((int) width, (int) height);

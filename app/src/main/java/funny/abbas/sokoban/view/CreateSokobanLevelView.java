@@ -211,7 +211,7 @@ public class CreateSokobanLevelView extends View {
                 if (row >= 0 && row < gridRows && col >= 0 && col < gridCols) {
                     draggedBoxType = dataLayer.getBasicMap().get(row, col);
                     // 在拖动开始时，将原始位置设为空
-                    dataLayer.remove(row, col);
+                    dataLayer.remove(col,row );
                     invalidate(); // 重绘，隐藏被拖动的方块
                 }
                 // 2. 检测是否点击了底部的工具栏方块
