@@ -36,9 +36,10 @@
 
 ## 游戏截图
 
-| 主界面 | 游戏中（纯色皮肤） | 游戏中（经典皮肤） | 关卡编辑器 |
-|--------|--------------------|--------------------|------------|
-| ![home](screenshots/ss_left.jpg) | ![game_clean](screenshots/ss_skin_pure.jpg) | ![game_classic](screenshots/ss_classic.jpg) | ![editor](screenshots/ss_cl.jpg) |
+| 主界面 | 游戏中（纯色皮肤）                                      | 游戏中（经典皮肤） | 关卡编辑器 |
+|--------|------------------------------------------------|--------------------|------------|
+| ![home](screenshots/ss_left.jpg) | ![game_clean](screenshots/ss_skin_pure.jpg)    | ![game_classic](screenshots/ss_classic.jpg) | ![editor](screenshots/ss_cl.jpg) |
+| ![home](screenshots/ss_main_land.jpg) | ![game_clean](screenshots/ss_classic_land.jpg) |  |
 
 ## 安装方式
 
@@ -54,7 +55,7 @@
 本地持久化：Room 数据库持久化自定义关卡数据 + SharedPreferences 持久化设置数据
 完全离线运行，无广告、无任何权限
 
-致谢
+### 致谢
 
 关卡数据来源于经典 YASS 88 关合集：[leoliu/sokoban](https://github.com/leoliu/sokoban)
 
