@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GameControllerView">
+        <!-- 十字键尺寸 -->
+        <attr name="crossKeyWidth" format="dimension|integer" />
+        <attr name="crossKeyHeight" format="dimension|integer" />
+
+        <!-- ABXY键尺寸 -->
+        <attr name="ABYXKeyWidth" format="dimension|integer" />
+        <attr name="ABYXKeyHeight" format="dimension|integer" />
+
+        <!-- L/R键尺寸 -->
+        <attr name="LRKeyWidth" format="dimension|integer" />
+        <attr name="LRKeyHeight" format="dimension|integer" />
+
+        <!-- SELECT/START键尺寸 -->
+        <attr name="selectStartKeyWidth" format="dimension|integer" />
+        <attr name="selectStartKeyHeight" format="dimension|integer" />
+
+        <!-- 控制器内边距 -->
+        <attr name="controllerPadding" format="dimension|integer" />
+
+        <!-- 十字键重复间隔（毫秒） -->
+        <attr name="crossKeyRepeatInterval" format="integer" />
+
+        <!-- 按键颜色 -->
+        <attr name="keyColor" format="color|string" />
+
+        <!-- 按键颜色透明度 -->
+        <attr name="keyAlpha" format="float" />
+    </declare-styleable>
+</resources>

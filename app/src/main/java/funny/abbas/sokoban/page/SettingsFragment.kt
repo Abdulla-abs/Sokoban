@@ -35,10 +35,4 @@ class SettingsFragment : PreferenceFragmentCompat() {
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
-            title = "设置"
-        }
-    }
 }

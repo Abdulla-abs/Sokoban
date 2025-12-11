@@ -6,15 +6,23 @@
 
         <item
             android:id="@+id/standard_level"
+            android:icon="@drawable/baseline_videogame_asset_24"
             android:title="经典关卡" />
         <item
+            android:icon="@drawable/baseline_gamepad_24"
             android:id="@+id/custom_level"
             android:title="自定义关卡" />
         <item
+            android:icon="@drawable/baseline_edit_road_24"
             android:id="@+id/create_level"
             android:title="创作关卡" />
         <item
+            android:icon="@drawable/baseline_settings_24"
             android:id="@+id/setting"
             android:title="设置" />
+        <item
+            android:icon="@drawable/baseline_star_24"
+            android:id="@+id/about"
+            android:title="关于" />
     </group>
 </menu>

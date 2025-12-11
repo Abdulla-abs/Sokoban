@@ -105,9 +105,12 @@ class CreateLevelFragment : Fragment() {
             CreateSokobanStateMachine.getTargetStatus(newState, CreateSokobanAction.TRANSFORM)
         val canBePreStateOp =
             CreateSokobanStateMachine.getTargetStatus(newState, CreateSokobanAction.BACK)
-        (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
+        requireActivity().findViewById<View>(R.id.toolbar)?.let {
+            (it as Toolbar).apply {
             subtitle = "${newState.desc}"
         }
+        }
+
         binding.previousState.isEnabled = canBePreStateOp != null
         binding.nextState.isEnabled = canBeNextStateOp != null
         binding.save.isEnabled = newState == CreateSokobanState.PUT_ROLE

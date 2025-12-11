@@ -8,20 +8,25 @@
     <fragment
         android:id="@+id/standardGameFragment"
         android:name="funny.abbas.sokoban.page.StandardGameFragment"
-        android:label="fragment_standard_game"
+        android:label="经典关卡"
         tools:layout="@layout/fragment_standard_game" />
     <fragment
         android:id="@+id/customGameFragment"
         android:name="funny.abbas.sokoban.page.CustomGameFragment"
-        android:label="fragment_custom_game"
+        android:label="自定义关卡"
         tools:layout="@layout/fragment_custom_game" />
     <fragment
         android:id="@+id/createLevelFragment"
         android:name="funny.abbas.sokoban.page.CreateLevelFragment"
-        android:label="fragment_create_level"
+        android:label="创作关卡"
         tools:layout="@layout/fragment_create_level" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="funny.abbas.sokoban.page.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="设置" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="funny.abbas.sokoban.page.AboutFragment"
+        android:label="关于"
+        tools:layout="@layout/fragment_about" />
 </navigation>

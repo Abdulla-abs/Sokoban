@@ -2,6 +2,7 @@ package funny.abbas.sokoban.page
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.SparseBooleanArray
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import funny.abbas.sokoban.R
 import funny.abbas.sokoban.databinding.FragmentStandardGameBinding
 import funny.abbas.sokoban.page.vm.MainViewModel
+import funny.abbas.sokoban.view.GameControllerView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -65,37 +67,56 @@ class StandardGameFragment : Fragment() {
                 .show()
         }
 
-        binding.preLevel.setOnClickListener {
-            mainViewModel.preLevel()
-        }
-        binding.nextLevel.setOnClickListener {
-            mainViewModel.nextLevel()
-        }
-        binding.btMoveLeft.setOnClickListener {
-            sokobanView.moveLeft()
-        }
-        binding.btMoveUp.setOnClickListener {
-            sokobanView.moveTop()
-        }
-        binding.btMoveRight.setOnClickListener {
-            sokobanView.moveRight()
-        }
-        binding.btMoveBottom.setOnClickListener {
-            sokobanView.moveBottom()
-        }
-        binding.refresh.setOnClickListener {
-            mainViewModel.reloadLevel()
-        }
-        binding.backStep.setOnClickListener {
-            binding.sokoban.backStep()
-        }
+        binding.controller.setCallback(object : GameControllerView.GameControllerViewCallback() {
+            override fun on(keyNumber: Int, keyName: String?, keyStatuses: SparseBooleanArray?) {
+                when (keyNumber) {
+                    GameControllerView.KEY_LEFT, GameControllerView.KEY_Y -> {
+                        binding.sokoban.moveLeft()
+                    }
+
+                    GameControllerView.KEY_UP, GameControllerView.KEY_X -> {
+                        binding.sokoban.moveTop()
+                    }
+
+                    GameControllerView.KEY_RIGHT, GameControllerView.KEY_A -> {
+                        binding.sokoban.moveRight()
+                    }
+
+                    GameControllerView.KEY_DOWN, GameControllerView.KEY_B -> {
+                        binding.sokoban.moveBottom()
+                    }
+
+                    GameControllerView.KEY_L -> {
+                        mainViewModel.preLevel()
+                    }
+
+                    GameControllerView.KEY_R -> {
+                        mainViewModel.nextLevel()
+                    }
+
+                    GameControllerView.KEY_SELECT -> {
+                        mainViewModel.reloadLevel()
+                    }
+
+                    GameControllerView.KEY_START -> {
+                        binding.sokoban.backStep()
+                    }
+                }
+            }
+
+            override fun off(keyNumber: Int, keyName: String?, keyStatuses: SparseBooleanArray?) {
+                super.off(keyNumber, keyName, keyStatuses)
+            }
+        })
 
         mainViewModel.currentLevel.observe(viewLifecycleOwner) { level ->
             sokobanView.setLevel(level)
-            (requireActivity().findViewById<View>(R.id.toolbar) as Toolbar).apply {
-                title = "经典关卡"
-                mainViewModel.levelIndex.value?.let {
-                    subtitle = "第${it+1}关"
+            requireActivity().findViewById<View>(R.id.toolbar)?.let {
+                (it as Toolbar).apply {
+                    title = "经典关卡"
+                    mainViewModel.levelIndex.value?.let {
+                        subtitle = "第${it + 1}关"
+                    }
                 }
             }
         }

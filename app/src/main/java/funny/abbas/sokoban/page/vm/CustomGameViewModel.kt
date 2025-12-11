@@ -20,7 +20,7 @@ class CustomGameViewModel : ViewModel {
     var currentIndex: Int = 0
         private set
 
-    val levelFlow = MutableSharedFlow<Result<Level>>()
+    val levelFlow = MutableSharedFlow<Result<Level>>(replay = 1)
 
     constructor() : super() {
         val subscribe = getLevelOfPage().subscribe({ dataList ->
@@ -136,6 +136,15 @@ class CustomGameViewModel : ViewModel {
             }
         } else {
             Result.failure(IndexOutOfBoundsException("已经没有下一关了~"))
+        }
+    }
+
+    fun reloadLevel(){
+        viewModelScope.launch {
+            val level = Level.parse(levelList[currentIndex].data)
+            levelFlow.emit(
+                Result.success(level)
+            )
         }
     }
 
