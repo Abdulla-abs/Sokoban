@@ -3,6 +3,9 @@ package funny.abbas.sokoban.core;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import funny.abbas.sokoban.core.map.BoxType;
+import funny.abbas.sokoban.core.map.MapObject;
+
 public class LevelMapper {
     public static Level mapper(BoxType[][] map, Location role, List<Location> boxes, List<Location> targets) {
         Level.Builder builder = new Level.Builder();
@@ -40,6 +43,7 @@ public class LevelMapper {
     }
 
     public static Level mapper(LevelVo levelVo) {
+        if (levelVo == null) return null;
         return mapper(levelVo.map, levelVo.role, levelVo.boxes, levelVo.targets);
     }
 }

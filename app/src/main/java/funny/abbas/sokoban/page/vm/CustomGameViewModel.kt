@@ -1,149 +1,141 @@
 package funny.abbas.sokoban.page.vm
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import funny.abbas.sokoban.MyApplication
-import funny.abbas.sokoban.database.bean.CustomLevel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import funny.abbas.sokoban.core.Level
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.flow.MutableSharedFlow
+import funny.abbas.sokoban.data.repository.CustomLevelRepository
+import funny.abbas.sokoban.page.CustomEffect
+import funny.abbas.sokoban.page.CustomIntent
+import funny.abbas.sokoban.page.CustomUiState
+import funny.abbas.sokoban.page.LevelListState
+import funny.abbas.sokoban.util.Resource
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CustomGameViewModel : ViewModel {
+@HiltViewModel
+class CustomGameViewModel @Inject constructor(
+    private val customRepository: CustomLevelRepository
+) : ViewModel() {
 
-    private var pageSize = 5
-    private var page = 0
+    private val _uiState = MutableStateFlow<CustomUiState>(CustomUiState())
+    val uiState: StateFlow<CustomUiState> = _uiState
 
-    private var levelList: MutableList<CustomLevel> = ArrayList(pageSize)
-    var currentIndex: Int = 0
-        private set
+    private val _sideEffect = Channel<CustomEffect>(Channel.BUFFERED)
+    val sideEffect = _sideEffect.receiveAsFlow()
 
-    val levelFlow = MutableSharedFlow<Result<Level>>(replay = 1)
+    init {
+        viewModelScope.launch {
+            customRepository.getCustomLevels().collect { resource ->
+                if (resource is Resource.Error) {
+                    _sideEffect.send(CustomEffect.ShowTips(resource.message))
+                }
+                _uiState.update { old ->
+                    old.copy(
+                        dataState = when (resource) {
+                            is Resource.Success -> {
+                                if (resource.data.isNotEmpty()) {
+                                    LevelListState.Success(resource.data)
+                                } else {
+                                    LevelListState.Empty
+                                }
+                            }
 
-    constructor() : super() {
-        val subscribe = getLevelOfPage().subscribe({ dataList ->
-            viewModelScope.launch {
-                val nextLevelInList = getNextLevelInList(currentIndex)
-                levelFlow.emit(nextLevelInList)
+                            is Resource.Error -> {
+                                LevelListState.Error(resource.message)
+                            }
+
+                            else -> old.dataState
+                        },
+                        currentLevel = when(resource){
+                            is Resource.Success -> {
+                                if (resource.data.isNotEmpty()) {
+                                    Level.parse(resource.data.getOrNull(old.currentIndex)?.data)
+                                }else{
+                                    null
+                                }
+                            }
+                            else -> null
+                        }
+                    )
+                }
             }
-        }, { e ->
-            Log.e("error", e.toString())
-        })
+        }
     }
 
-    private fun getLevelOfPage(): Single<List<CustomLevel>> {
-        return MyApplication.appDatabase.customLevelDao
-            .getLevelWithLimit(pageSize, page * pageSize)
-            .subscribeOn(Schedulers.io())
-            .map { dataList ->
-                levelList.clear()
-                levelList.addAll(dataList)
-                return@map dataList
+    fun onIntent(intent: CustomIntent) {
+        when (intent) {
+            is CustomIntent.PreviousLevel -> {
+                onPreLevel()
             }
+
+            is CustomIntent.NextLevel -> {
+                onNextLevel()
+            }
+
+            is CustomIntent.ReloadLevel -> {
+                onReload()
+            }
+        }
     }
 
-    fun getPreLevel() {
-        if (currentIndex <= 0) {
+    private fun onPreLevel() {
+        if (_uiState.value.currentIndex <= 0) {
             viewModelScope.launch {
-                levelFlow.emit(Result.failure(IllegalStateException("没有-1关~")))
+                _sideEffect.send(CustomEffect.ShowTips("没有上一关了~"))
             }
             return
         }
-        var preIndex = currentIndex - 1
-        val start = pageSize * page
-        val end = pageSize * (page + 1)
-        if (preIndex in start..end) {
-            viewModelScope.launch {
-                val preLevelInList = getPreLevelInList(preIndex)
-                if (preLevelInList.isSuccess) {
-                    currentIndex = preIndex
-                }
-                levelFlow.emit(preLevelInList)
-            }
-        } else {
-            if (page <= 0) {
-                viewModelScope.launch {
-                    levelFlow.emit(Result.failure(IllegalStateException("当前已经是第一页")))
-                }
-                return
-            }
-            page--
-            val subscribe = getLevelOfPage().subscribe({
-                viewModelScope.launch {
-                    val preLevelInList = getPreLevelInList(preIndex)
-                    if (preLevelInList.isSuccess) {
-                        currentIndex = preIndex
+        _uiState.update { old ->
+            old.copy(
+                currentLevel = when (old.dataState) {
+                    is LevelListState.Success -> {
+                        Level.parse(old.dataState.levels.getOrNull(old.currentIndex - 1)?.data)
                     }
-                    levelFlow.emit(preLevelInList)
-                }
-            }, { e ->
 
-            })
+                    else -> old.currentLevel
+                },
+                currentIndex = old.currentIndex - 1
+            )
         }
     }
 
-    fun getNextLevel() {
-        var nextIndex = currentIndex + 1
-        if (nextIndex >= pageSize + pageSize * page) {
-            //fetch next page
-            page++
-            val subscribe = getLevelOfPage().subscribe({
-                viewModelScope.launch {
-                    var nextLevelInList = getNextLevelInList(nextIndex)
-                    if (nextLevelInList.isSuccess) {
-                        currentIndex = nextIndex
-                    }
-                    levelFlow.emit(nextLevelInList)
-                }
-            }, { e ->
-                viewModelScope.launch {
-                    levelFlow.emit(Result.failure(e))
-                }
-            })
-        } else {
+    private fun onNextLevel() {
+        if (_uiState.value.currentIndex >= _uiState.value.levelsSize-1) {
             viewModelScope.launch {
-                var nextLevelInList = getNextLevelInList(nextIndex)
-                if (nextLevelInList.isSuccess) {
-                    currentIndex = nextIndex
-                }
-                levelFlow.emit(nextLevelInList)
+                _sideEffect.send(CustomEffect.ShowTips("没有下一关了~"))
             }
+            return
+        }
+        _uiState.update { old ->
+            old.copy(
+                currentLevel = when (old.dataState) {
+                    is LevelListState.Success -> {
+                        Level.parse(old.dataState.levels.getOrNull(old.currentIndex + 1)?.data)
+                    }
+
+                    else -> old.currentLevel
+                },
+                currentIndex = old.currentIndex + 1
+            )
         }
     }
 
-    private fun getPreLevelInList(index: Int): Result<Level> {
-        val listIndex = index % pageSize
-        return if (listIndex <= levelList.size - 1) {
-            try {
-                Result.success(Level.parse(levelList[listIndex].data))
-            } catch (e: Exception) {
-                Result.failure(e);
-            }
-        } else {
-            Result.failure(IndexOutOfBoundsException("已经没有上一关了~"))
-        }
-    }
+    private fun onReload() {
+        _uiState.update { old ->
+            old.copy(
+                currentLevel = when (old.dataState) {
+                    is LevelListState.Success -> {
+                        Level.parse(old.dataState.levels.getOrNull(old.currentIndex)?.data)
+                    }
 
-    private fun getNextLevelInList(index: Int): Result<Level> {
-        val listIndex = index % pageSize
-        return if (listIndex <= levelList.size - 1) {
-            try {
-                Result.success(Level.parse(levelList[listIndex].data))
-            } catch (e: Exception) {
-                Result.failure(e);
-            }
-        } else {
-            Result.failure(IndexOutOfBoundsException("已经没有下一关了~"))
-        }
-    }
-
-    fun reloadLevel(){
-        viewModelScope.launch {
-            val level = Level.parse(levelList[currentIndex].data)
-            levelFlow.emit(
-                Result.success(level)
+                    else -> old.currentLevel
+                },
             )
         }
     }

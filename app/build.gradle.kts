@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt.android)
 
     kotlin("kapt")
 }
@@ -50,6 +51,7 @@ dependencies {
     // Room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-rxjava3:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
 
     implementation("com.google.code.gson:gson:2.8.2")
@@ -63,6 +65,11 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.4") // Fragment 也需要
 
     implementation("com.google.guava:guava:33.4.0-android")
+
+    // Hilt
+    implementation(libs.jakarta.inject.api)
+    implementation("com.google.dagger:hilt-android:2.51")
+    kapt("com.google.dagger:hilt-compiler:2.51")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

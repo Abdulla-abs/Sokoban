@@ -14,13 +14,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-import funny.abbas.sokoban.core.BoxType;
+import funny.abbas.sokoban.core.Action;
+import funny.abbas.sokoban.core.Controller;
+import funny.abbas.sokoban.core.Direction;
+import funny.abbas.sokoban.core.StepListener;
+import funny.abbas.sokoban.core.StepRemember;
+import funny.abbas.sokoban.core.map.BoxType;
 import funny.abbas.sokoban.core.Level;
 import funny.abbas.sokoban.core.Location;
-import funny.abbas.sokoban.core.MapObject;
-import funny.abbas.sokoban.core.Skin;
-import funny.abbas.sokoban.core.Theme;
+import funny.abbas.sokoban.core.map.MapObject;
+import funny.abbas.sokoban.core.skin.Skin;
+import funny.abbas.sokoban.core.skin.Theme;
 
 public class SokobanView extends View implements Action {
 
@@ -130,7 +138,7 @@ public class SokobanView extends View implements Action {
             for (int i = 0; i < controller.level.map.length; i++) {
                 for (int j = 0; j < controller.level.map[0].length; j++) {
                     MapObject box = controller.level.map[i][j];
-                    Bitmap bitmap = skin.loadSkin(box.getBoxType(),box.getDirection(), measuredBoxSize, measuredBoxSize);
+                    Bitmap bitmap = skin.loadSkin(box.getBoxType(), box.getDirection(), measuredBoxSize, measuredBoxSize);
                     canvas.drawBitmap(bitmap, paddingStart + box.getLocation().getX() * measuredBoxSize,
                             paddingTop + box.getLocation().getY() * measuredBoxSize, null);
                 }
@@ -145,9 +153,16 @@ public class SokobanView extends View implements Action {
     }
 
     public void setLevel(Level level) {
+        if (level == null) return;
         controller.level = level;
         basicMapNeedInvalidate = true;
         requestLayout();
+    }
+
+    public void setStepListener(StepListener stepListener) {
+        Optional.ofNullable(controller.level)
+                .map(level -> level.stepRemember)
+                .ifPresent(stepRemember -> stepRemember.setListener(stepListener));
     }
 
     public void replaceSkin(Theme theme) {

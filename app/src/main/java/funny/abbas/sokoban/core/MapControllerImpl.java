@@ -3,6 +3,8 @@ package funny.abbas.sokoban.core;
 import java.util.List;
 import java.util.Optional;
 
+import funny.abbas.sokoban.core.map.MapObject;
+
 public class MapControllerImpl implements MapController {
 
     public long levelHashCode = -1;

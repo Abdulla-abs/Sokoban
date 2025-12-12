@@ -3,6 +3,15 @@ package funny.abbas.sokoban.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import funny.abbas.sokoban.core.map.Box;
+import funny.abbas.sokoban.core.map.BoxType;
+import funny.abbas.sokoban.core.map.Empty;
+import funny.abbas.sokoban.core.map.MapObject;
+import funny.abbas.sokoban.core.map.Role;
+import funny.abbas.sokoban.core.map.Target;
+import funny.abbas.sokoban.core.map.Wall;
+import kotlin.jvm.JvmStatic;
+
 public class Level {
 
     public final MapObject[][] map;
@@ -51,6 +60,7 @@ public class Level {
         return integers;
     }
 
+    @JvmStatic
     public static Level parse(List<Integer> origin) {
         if (origin == null || origin.size() < 2) {
             throw new IllegalStateException("数据不完整");

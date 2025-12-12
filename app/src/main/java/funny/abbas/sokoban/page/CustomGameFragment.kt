@@ -12,6 +12,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 import funny.abbas.sokoban.R
 import funny.abbas.sokoban.databinding.FragmentCustomGameBinding
 import funny.abbas.sokoban.page.vm.CustomGameViewModel
@@ -28,6 +30,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [CustomGameFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class CustomGameFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -91,15 +94,15 @@ class CustomGameFragment : Fragment() {
                     }
 
                     GameControllerView.KEY_L -> {
-                        viewmodel.getPreLevel()
+                        viewmodel.onIntent(CustomIntent.PreviousLevel())
                     }
 
                     GameControllerView.KEY_R -> {
-                        viewmodel.getNextLevel()
+                        viewmodel.onIntent(CustomIntent.NextLevel())
                     }
 
                     GameControllerView.KEY_SELECT -> {
-                        viewmodel.reloadLevel()
+                        viewmodel.onIntent(CustomIntent.ReloadLevel())
                     }
 
                     GameControllerView.KEY_START -> {
@@ -114,24 +117,51 @@ class CustomGameFragment : Fragment() {
         })
 
         lifecycleScope.launch {
-            viewmodel.levelFlow.collect { levelResult ->
-                if (levelResult.isSuccess) {
-                    requireActivity().findViewById<View>(R.id.toolbar)?.let {
-                        (it as Toolbar).apply {
-                        subtitle = "第${viewmodel.currentIndex+1}关"
-                    }
+            viewmodel.uiState.collect { uiState ->
+                when (uiState.dataState) {
+                    is LevelListState.Success -> {
+                        sokobanView.setLevel(uiState.currentLevel)
                     }
 
-                    binding.sokoban.setLevel(levelResult.getOrNull())
+                    else -> {
+                        //nothing
+                    }
                 }
-                if (levelResult.isFailure) {
-                    Toast.makeText(
-                        requireActivity(), levelResult.exceptionOrNull().toString(),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                requireActivity().findViewById<View>(R.id.toolbar)?.let {
+                    (it as Toolbar).apply {
+                        subtitle = "第${uiState.currentIndex + 1}/${uiState.levelsSize}关"
+                    }
                 }
             }
         }
+        lifecycleScope.launch {
+            viewmodel.sideEffect.collect { effect ->
+                when (effect) {
+                    is CustomEffect.ShowTips -> {
+                        Toast.makeText(requireActivity(), effect.msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+//        lifecycleScope.launch {
+//            viewmodel.levelFlow.collect { levelResult ->
+//                if (levelResult.isSuccess) {
+//                    requireActivity().findViewById<View>(R.id.toolbar)?.let {
+//                        (it as Toolbar).apply {
+//                        subtitle = "第${viewmodel.currentIndex+1}关"
+//                    }
+//                    }
+//
+//                    binding.sokoban.setLevel(levelResult.getOrNull())
+//                }
+//                if (levelResult.isFailure) {
+//                    Toast.makeText(
+//                        requireActivity(), levelResult.exceptionOrNull().toString(),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//            }
+//        }
     }
 
     companion object {

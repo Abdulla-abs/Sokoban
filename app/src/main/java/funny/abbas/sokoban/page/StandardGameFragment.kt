@@ -7,13 +7,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 import funny.abbas.sokoban.R
+import funny.abbas.sokoban.core.StepListener
 import funny.abbas.sokoban.databinding.FragmentStandardGameBinding
 import funny.abbas.sokoban.page.vm.MainViewModel
 import funny.abbas.sokoban.view.GameControllerView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,7 +34,8 @@ private const val ARG_PARAM2 = "param2"
  * Use the [StandardGameFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class StandardGameFragment : Fragment() {
+@AndroidEntryPoint
+class StandardGameFragment : Fragment(), StepListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -87,15 +97,15 @@ class StandardGameFragment : Fragment() {
                     }
 
                     GameControllerView.KEY_L -> {
-                        mainViewModel.preLevel()
+                        mainViewModel.onIntent(StandardGameIntent.PreviousLevel())
                     }
 
                     GameControllerView.KEY_R -> {
-                        mainViewModel.nextLevel()
+                        mainViewModel.onIntent(StandardGameIntent.NextLevel())
                     }
 
                     GameControllerView.KEY_SELECT -> {
-                        mainViewModel.reloadLevel()
+                        mainViewModel.onIntent(StandardGameIntent.ReloadLevel())
                     }
 
                     GameControllerView.KEY_START -> {
@@ -103,23 +113,50 @@ class StandardGameFragment : Fragment() {
                     }
                 }
             }
-
-            override fun off(keyNumber: Int, keyName: String?, keyStatuses: SparseBooleanArray?) {
-                super.off(keyNumber, keyName, keyStatuses)
-            }
         })
 
-        mainViewModel.currentLevel.observe(viewLifecycleOwner) { level ->
-            sokobanView.setLevel(level)
-            requireActivity().findViewById<View>(R.id.toolbar)?.let {
-                (it as Toolbar).apply {
-                    title = "经典关卡"
-                    mainViewModel.levelIndex.value?.let {
-                        subtitle = "第${it + 1}关"
+        lifecycleScope.launch {
+            mainViewModel.uiState.collect { uiState ->
+                when (uiState.levelListState) {
+                    is StandardLevelState.Success -> {
+                        uiState.currentLevel?.let {
+                            sokobanView.setLevel(it)
+                        }
+                        requireActivity().findViewById<View>(R.id.toolbar)?.let {
+                            (it as Toolbar).subtitle =
+                                "第${uiState.currentLevelIndex + 1}/${uiState.levelListSize}关"
+                        }
+                    }
+
+                    is StandardLevelState.Loading -> {
+                        // loading
+                    }
+
+                    is StandardLevelState.Error -> {
+                        // error
+                    }
+
+                    else -> {
+                        // none
                     }
                 }
             }
         }
+        lifecycleScope.launch {
+            mainViewModel.sideEffect.collect {
+                when (it) {
+                    is StandardGameEffect.ShowTips -> {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(requireActivity(), it.msg, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onStepChange(step: Int, pushBoxStep: Int) {
+        binding.debug.text = "${step} : ${pushBoxStep}"
     }
 
     companion object {

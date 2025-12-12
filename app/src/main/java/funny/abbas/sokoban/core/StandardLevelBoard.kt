@@ -1,5 +1,7 @@
 package funny.abbas.sokoban.core
 
+import funny.abbas.sokoban.core.map.BoxType
+
 class StandardLevelBoard {
 
     fun level1(): Level? {

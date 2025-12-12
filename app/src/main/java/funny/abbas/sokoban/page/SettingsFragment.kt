@@ -1,13 +1,13 @@
 package funny.abbas.sokoban.page
 
 import android.os.Bundle
-import android.view.View
-import androidx.appcompat.widget.Toolbar
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
+import dagger.hilt.android.AndroidEntryPoint
 import funny.abbas.sokoban.R
-import funny.abbas.sokoban.core.Skin
+import funny.abbas.sokoban.core.skin.Skin
 
+@AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

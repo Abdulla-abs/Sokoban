@@ -9,20 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import dagger.hilt.android.AndroidEntryPoint
 import funny.abbas.sokoban.databinding.ActivityMainBinding
 import funny.abbas.sokoban.page.vm.MainViewModel
-import funny.abbas.sokoban.util.SokobanParser
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.IOException
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -45,83 +41,53 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        binding.toolbar?.let {
-            setSupportActionBar(it)
 
-            binding.drawerLayout?.let{
-                // 关键：把 Toolbar 左上角变成“三横”图标，并自动处理点击打开抽屉
-                val toggle = ActionBarDrawerToggle(
-                    this, binding.drawerLayout, binding.toolbar,
-                    R.string.navigation_drawer_open,    // 可不写，随便填
-                    R.string.navigation_drawer_close
-                )
-                it.addDrawerListener(toggle)
-                toggle.syncState()   // 这一行很重要！同步状态
-            }
-        }
+        setSupportActionBar(binding.toolbar)
+
+        // 关键：把 Toolbar 左上角变成“三横”图标，并自动处理点击打开抽屉
+        val toggle = ActionBarDrawerToggle(
+            this, binding.drawerLayout, binding.toolbar,
+            R.string.navigation_drawer_open,    // 可不写，随便填
+            R.string.navigation_drawer_close
+        )
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()   // 这一行很重要！同步状态
+
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        binding.drawerLayout?.let {
-            // 关键：告诉系统哪些是“顶级页面”（返回箭头会变成三横）
-            appBarConfiguration = AppBarConfiguration(
-                setOf(
-                    R.id.standardGameFragment,
-                    R.id.customGameFragment,
-                    R.id.createLevelFragment
-                ), // 这里写所有顶级页面
-                it
-            )
 
-            // 自动处理 Toolbar 和抽屉图标
-            setupActionBarWithNavController(navController, appBarConfiguration)
+        // 关键：告诉系统哪些是“顶级页面”（返回箭头会变成三横）
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.standardGameFragment,
+                R.id.customGameFragment,
+                R.id.createLevelFragment
+            ), // 这里写所有顶级页面
+            binding.drawerLayout
+        )
+
+        // 自动处理 Toolbar 和抽屉图标
+        setupActionBarWithNavController(navController, appBarConfiguration)
+
+
+        // 侧滑菜单点击自动跳转
+        binding.navView.setupWithNavController(navController)
+
+        // NavigationView 菜单点击事件
+        binding.navView.setNavigationItemSelectedListener { menuItem ->
+            onNavigationClick(menuItem)
+            // 点击后自动关掉侧滑菜单（推荐）
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+            binding.toolbar.subtitle = null
+            true
         }
-
-        binding.navView?.let{
-            // 侧滑菜单点击自动跳转
-            it.setupWithNavController(navController)
-
-            // NavigationView 菜单点击事件
-            it.setNavigationItemSelectedListener { menuItem ->
-                onNavigationClick(menuItem)
-                // 点击后自动关掉侧滑菜单（推荐）
-                binding.drawerLayout?.closeDrawer(GravityCompat.START)
-                binding.toolbar?.subtitle = null
-                true
-            }
-        }
-
-
-        viewModel.allLevel.observe(this) { dataList ->
-            if (dataList == null || dataList.isEmpty()) {
-                loadLevel()
-            }
-        }
-
 
     }
 
-    private fun loadLevel() {
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    val inputStream = assets.open("level/sokoban.levels")
-                    val text = inputStream.bufferedReader().use { it.readText() }
-                    withContext(Dispatchers.Default) {
-                        val allLevels = SokobanParser.parseLevels(text)
-                        viewModel.allLevel.postValue(allLevels)
-                    }
-                } catch (e: IOException) {
-                    throw e
-                }
-            }
-
-        }
-    }
-
-    private fun onNavigationClick(menuItem :MenuItem){
+    private fun onNavigationClick(menuItem: MenuItem) {
         when (menuItem.itemId) {
             R.id.standard_level -> { /* 切换到首页 */
                 navController.navigate(R.id.standardGameFragment)
@@ -139,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                 navController.navigate(R.id.settingsFragment)
             }
 
-            R.id.about ->{
+            R.id.about -> {
                 navController.navigate(R.id.aboutFragment)
             }
         }

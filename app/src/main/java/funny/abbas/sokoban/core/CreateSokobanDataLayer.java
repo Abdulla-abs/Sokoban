@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
 
+import funny.abbas.sokoban.core.map.BoxType;
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanState;
 import funny.abbas.sokoban.util.ResizableSparseArray2D;
 

@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
 import funny.abbas.sokoban.MyApplication
 import funny.abbas.sokoban.R
-import funny.abbas.sokoban.database.bean.CustomLevel
+import funny.abbas.sokoban.data.database.bean.CustomLevel
 import funny.abbas.sokoban.databinding.FragmentCreateLevelBinding
 import funny.abbas.sokoban.core.CreateSokobanStateMachine
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanAction
@@ -29,6 +31,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [CreateLevelFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class CreateLevelFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null

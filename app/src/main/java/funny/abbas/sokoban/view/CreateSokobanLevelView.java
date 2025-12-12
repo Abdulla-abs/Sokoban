@@ -21,13 +21,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import funny.abbas.sokoban.core.BoxType;
+import funny.abbas.sokoban.core.CreateSokobanListener;
+import funny.abbas.sokoban.core.Direction;
+import funny.abbas.sokoban.core.map.BoxType;
 import funny.abbas.sokoban.core.CreateSokobanDataLayer;
 import funny.abbas.sokoban.core.CreateSokobanMode;
 import funny.abbas.sokoban.core.Level;
 import funny.abbas.sokoban.core.LevelMapper;
 import funny.abbas.sokoban.core.Location;
-import funny.abbas.sokoban.core.Skin;
+import funny.abbas.sokoban.core.skin.Skin;
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanAction;
 import funny.abbas.sokoban.state.createsokoban.CreateSokobanState;
 import funny.abbas.sokoban.util.Result;
@@ -107,7 +109,7 @@ public class CreateSokobanLevelView extends View {
 
         for (int i = 0; i < gridRows; i++) {
             for (int j = 0; j < gridCols; j++) {
-                Bitmap bitmap = skin.loadSkin(dataLayer.getBasicMap().get(i, j),Direction.BOTTOM, measuredBoxSize, measuredBoxSize);
+                Bitmap bitmap = skin.loadSkin(dataLayer.getBasicMap().get(i, j), Direction.BOTTOM, measuredBoxSize, measuredBoxSize);
                 canvas.drawBitmap(bitmap, j * measuredBoxSize, i * measuredBoxSize,
                         null);
             }
